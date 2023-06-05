@@ -1,0 +1,14 @@
+requests
+python_socketio==5.0.4
+PyQt5-tools==5.15.4.3.2
+PyQtWebEngine==5.15.6
+appdirs
+numpy
+colorthief
+pillow
+browser_cookie3
+websockets
+websocket-client
+pycryptodome
+keyring
+pyperclip

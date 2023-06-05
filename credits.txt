@@ -1,0 +1,31 @@
+SpotAlong was made possible through these open source libraries and their respective maintainers: 
+
+requests
+python_socketio
+PyQt5
+PyQt5-tools
+PyQtWebEngine
+appdirs
+numpy
+colorthief
+pillow
+browser_cookie3
+websockets
+websocket-client
+pycryptodome
+flask
+flask-restful
+psycopg2-binary
+flask-socketio
+python-dotenv
+spotipy
+gunicorn
+eventlet
+keyring
+pyperclip
+
+A special thanks goes to Wanderson and his amazing PyQt interfaces, one of which was the inspiration for SpotAlong:
+https://github.com/Wanderson-Magalhaes/Simple_PySide_Base
+https://www.youtube.com/watch?v=iaIooM9FlRI
+
+And we can't forget about the hundreds of stackoverflow articles that helped me through debugging :)
