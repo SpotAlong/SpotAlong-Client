@@ -137,7 +137,7 @@ class MainUI(UiMainWindow):
                      '16x16\\cil-arrow-bottom', '16x16\\cil-arrow-top', '24x24\\cil-window-restore']
             scale_images(icons, ratio)
             self.scaled = 'scaled'
-        self.label_6.setText('v0.9')
+        self.label_6.setText('v1.0.0')
         self.label_5.setText(f'Copyright © 2020-{time.gmtime().tm_year} CriticalElement // Check me out on GitHub!')
         url = self.client.mainstatus.clientavatar
         if url is not None:
@@ -206,6 +206,7 @@ class MainUI(UiMainWindow):
         self.horizontalLayout_6.setAlignment(QtCore.Qt.AlignCenter)
         it = 1
         for id_, friend in client.friendstatus.items():
+            skipiter = False
             if friend.playing_type not in ('None', 'ad', 'episode'):
                 status = friend.playing_status.lower()
             else:
@@ -228,17 +229,20 @@ class MainUI(UiMainWindow):
                 QtCore.QCoreApplication.processEvents()
 
             def callbackfunc(wi):
+                nonlocal skipiter
                 laststatuswidget = wi.convert_to_widget()
                 if laststatuswidget:
                     self.verticalLayout_16.insertWidget(0, laststatuswidget)
                     self.laststatuses.update({id_: laststatuswidget})
+                else:
+                    skipiter = True
 
             widget = Runnable(lambda: PartialPastFriendStatus(friend))
             widget.callback.connect(callbackfunc)
             widget.start()
             progress_bar.setValue(60)
 
-            while len(self.laststatuses) != it:
+            while len(self.laststatuses) != it and not skipiter:
                 QtCore.QCoreApplication.processEvents()
 
             def callbackfunc(wi):
@@ -925,8 +929,9 @@ class MainUI(UiMainWindow):
                     self.laststatuses.update({historywidget.id: historywidget})
                 else:
                     historywidget = historywidget.convert_to_widget()
-                    self.verticalLayout_16.insertWidget(0, historywidget)
-                    self.laststatuses.update({historywidget.id: historywidget})
+                    if historywidget:
+                        self.verticalLayout_16.insertWidget(0, historywidget)
+                        self.laststatuses.update({historywidget.id: historywidget})
             elif isinstance(historywidget, DeleteWidget):
                 for delete in historywidget.args:
                     if delete in self.laststatuses:

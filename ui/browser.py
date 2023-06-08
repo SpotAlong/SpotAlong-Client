@@ -226,7 +226,10 @@ class Browser(QWidget):
         for c in self.cookies:
             if c.hasSameIdentifier(cookie):
                 return
-        self.cookies.append(QNetworkCookie(cookie))
+        qcookie = QNetworkCookie(cookie)
+        if 'spotify.com' not in qcookie.domain():
+            return
+        self.cookies.append(qcookie)
         self.tostring()
 
     def tostring(self):

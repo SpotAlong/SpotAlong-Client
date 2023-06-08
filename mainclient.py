@@ -425,7 +425,8 @@ class MainClient:
             # this gets handled elsewhere better
         progress_bar.setValue(30)
 
-    def invoke_request(self, url, data, request_type='GET', callback=lambda _=None: None, failed=lambda: None):
+    def invoke_request(self, url, data, request_type='GET', callback=lambda _=None: None, failed=lambda: None,
+                       timeout=5):
         try:
             if request_type in ['GET', 'POST', 'DELETE']:
                 if time.time() > self._timeout:
@@ -437,10 +438,10 @@ class MainClient:
                         self.quit(401)
                 request_type = request_type.lower()
                 resp = getattr(requests, request_type)(url, data=data, headers={'authorization': self._access_token},
-                                                       timeout=5)
+                                                       timeout=timeout)
                 if resp.status_code == 401 and resp.json()['reason'] == 'Unauthorized':
                     resp = requests.get(BASE_URL + '/login/eligible', headers={'authorization': self._access_token},
-                                        timeout=5)
+                                        timeout=timeout)
                     if resp.status_code == 401 and resp.json()['reason'] == 'Timed out.':
                         refresh_resp = refresh(self._access_token, self._refresh_token)
                         if refresh_resp:
@@ -453,7 +454,8 @@ class MainClient:
                         logger.critical(f'A critical error occured with authorization, exiting: {resp.json()}')
                         self.quit(401)
                     resp = getattr(requests, request_type)(url, data=data,
-                                                           headers={'authorization': self._access_token}, timeout=5)
+                                                           headers={'authorization': self._access_token}, timeout=
+                                                           timeout)
                     func = signature(callback)
                     if len(func.parameters) > 0:
                         callback(resp)
@@ -495,7 +497,7 @@ class MainClient:
             if not self.spotifyplayer:
                 return
             queue = {'queue': json.dumps(self.spotifyplayer.queue)}
-            self.invoke_request(BASE_URL + '/cache/precache', queue, request_type='POST')
+            self.invoke_request(BASE_URL + '/cache/precache', queue, request_type='POST', timeout=15)
         except Exception as exc:
             logger.warning('An error occured while uploading the queue to cache, continuing normally: ',
                            exc_info=exc)

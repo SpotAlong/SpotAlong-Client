@@ -735,7 +735,10 @@ class PartialPlaybackController:
                     spotifyplayer._authorize()
                     saved_songs = spotifyplayer.create_api_request(f'/me/tracks/contains?ids={mainstatus.songid}')
                     saved_songs = saved_songs.json()
-                self.is_saved = saved_songs[0]
+                if not saved_songs:
+                    self.is_saved = False
+                else:
+                    self.is_saved = saved_songs[0]
             else:
                 self.is_saved = False
             self.shuffle_state = spotifyplayer.shuffling
@@ -1411,6 +1414,10 @@ class PlaybackController(QtWidgets.QWidget):
         def wrap():
             try:
                 func()
+            except IndexError as exc:
+                logger.error('No active Spotify session found: ', exc_info=exc)
+                mainui.show_snack_bar_threadsafe('No active Spotify session detected; '
+                                                 'try playing a song on your device.', True, True)
             except Exception as exc:
                 logger.error('An error occured while trying to change the playback state: ', exc_info=exc)
                 self.snack_bar_callback.run()
