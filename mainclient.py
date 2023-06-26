@@ -50,7 +50,7 @@ watcher.setFormatter(logging.Formatter('%(message)s'))
 watcher.setLevel(logging.INFO)
 
 
-data_dir = user_data_dir('SpotAlongTesting', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
 
 
 class MainClient:
@@ -147,10 +147,10 @@ class MainClient:
                         self.client.disconnect()
                         QtCore.QTimer.singleShot(0, self.ui.disconnect_overlay.show)
                         self.client = Client(False, logger=True)
+                        add_event_listeners()
                         self.client.connect(REGULAR_BASE, headers={'authorization': self._access_token,
                                                                    'version': VERSION},
                                             namespaces=['/api/authorization'])
-                        add_event_listeners()
                         logger.info('Websocket reconnection successful')
                         self.client.start_background_task(self.client.wait)
                         self.client.start_background_task(self.check_logs)
@@ -407,7 +407,7 @@ class MainClient:
             self.client.on('listening_state', recieve_state, namespace='/api/authorization')
 
         try:
-            self.spotifyplayer = SpotifyPlayer(cookie_str=keyring.get_password('SpotAlongTesting', 'cookie'))
+            self.spotifyplayer = SpotifyPlayer(cookie_str=keyring.get_password('SpotAlong', 'cookie'))
             self.spotifyplayer.add_event_reciever(self.send_next_for_listening)
             self.spotifyplayer.add_event_reciever(self.send_state_for_listening)
         except Exception as e:

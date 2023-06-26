@@ -30,7 +30,7 @@ from mainclient import MainClient  # noqa
 
 logger = logging.getLogger(__name__)
 
-data_dir = user_data_dir('SpotAlongTesting', 'CriticalElement')
+data_dir = user_data_dir('SpotAlong', 'CriticalElement')
 
 
 class SpotifyListener:

@@ -16,6 +16,7 @@ Copyright (C) 2020-Present CriticalElement
     If not, see <https://www.gnu.org/licenses/>.
 """
 
+import math
 import os
 import logging
 import shutil
@@ -32,7 +33,7 @@ import numpy as np
 from PIL.PyAccess import PyAccess
 from colorthief import ColorThief
 from appdirs import user_data_dir
-from PIL import Image
+from PIL import Image, ImageStat
 
 from .constants import BASE_URL  # noqa
 
@@ -44,7 +45,7 @@ if typing.TYPE_CHECKING:
 __all__ = ('extract_color', 'feather_image', 'download_album', 'clean_album_image_cache', 'convert_from_utc_timestamp')
 
 
-data_dir = user_data_dir('SpotAlongTesting', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
 logger = logging.getLogger(__name__)
 
 
@@ -74,42 +75,52 @@ def extract_color(url):
         logger.info(f'Color extraction cache for {album_id} hit')
         return tuple(colors_cache[album_id][0]), tuple(colors_cache[album_id][1]), tuple(colors_cache[album_id][2])
     start = time.perf_counter()
-    image = ColorThief(data_dir + f'partialalbum{url.split("/image/")[1]}.png')
-    start2 = time.perf_counter()
-    colors = image.get_palette(color_count=8)
-    end2 = time.perf_counter()
-    logger.info(f'Sub-color extraction 1: {end2 - start2}')
-    brightness = np.mean([np.mean(items) for items in [np.mean(item) for item in colors]])
-    if 122 < brightness < 133 or brightness < 110:
-        dark = True
-        dominant_color = [np.mean(items) for items in [np.mean(item) for item in colors]]
-        dominant_color = colors[dominant_color.index(min(dominant_color))]
-    elif brightness < 122:
-        dark = True
-        dominant_color = image.get_color()
+    filename = data_dir + f'partialalbum{url.split("/image/")[1]}.png'
+    image = ColorThief(filename)
+    colors = image.get_palette(8, 5)
+    old_colors = colors.copy()
+    srcimage = Image.open(filename)
+    try:
+        r, g, b = ImageStat.Stat(srcimage).rms
+    except ValueError:
+        r, g, b = 127, 127, 127
+    brightness = math.sqrt(0.299 * r ** 2 + 0.587 * g ** 2 + 0.114 * b ** 2)
+    dominant_color = colors[0]
+    colors = colors[1:]
+    nextavg = np.mean(colors[0])
+    if nextavg < 20 or nextavg > 220:
+        text_color = colors[0]
     else:
-        dark = False
-        dominant_color = image.get_color()
-    palette = colors
-    dark_color = [color - 30 if not (color - 30) < 0 else 0 for color in dominant_color]
-    if not dark and brightness < 140:
-        text_color = [np.mean(items) for items in [np.mean(item) for item in palette]]
-        text_color = palette[text_color.index(min(text_color))]
-    else:
-        text_color = max([max(color) - min(color) for color in palette])
-        for color in palette:
-            if max(color) - min(color) == text_color:
-                text_color = color
-    average = []
-    for index, color in enumerate(text_color):
-        average.append(abs(color - dominant_color[index]))
-    if np.mean(average) < 40:
-        text_color = [np.mean(items) for items in [np.mean(item) for item in colors]]
-        text_color = colors[text_color.index(min(text_color))]
-    average = []
-    for index, color in enumerate(text_color):
-        average.append(abs(color - dominant_color[index]))
-    if np.mean(average) < 40:
+        color_vividness = [max(color) - min(color) for color in colors]
+        mult_fact = 1.6
+        for i in range(len(color_vividness)):
+            color_vividness[i] *= mult_fact
+            color_vividness[i] *= mult_fact
+            mult_fact -= 0.2
+        text_color = colors[color_vividness.index(max(color_vividness))]
+    if brightness < 107 or (brightness < 121 and np.mean(dominant_color) > 140):
+        if np.mean(dominant_color) - np.mean(text_color) > 20 or np.mean(dominant_color) > 140:
+            if np.mean(text_color) < 50:
+                dominant_color, text_color = text_color, dominant_color
+            else:
+                averages = [np.mean(c) for c in colors]
+                index = averages.index(min(averages))
+                dominant_color = colors[index]
+    if brightness > 169:
+        if np.mean(text_color) - np.mean(dominant_color) > 20:
+            if np.mean(text_color) > 220:
+                dominant_color, text_color = text_color, dominant_color
+            else:
+                averages = [np.mean(c) for c in colors]
+                index = averages.index(max(averages))
+                dominant_color = colors[index]
+    dark_color = tuple([max(0, c - 30) for c in dominant_color])
+    all_averages = [np.mean(c) for c in old_colors]
+    if all([abs(dominant_color[i] - text_color[i]) < 20 for i in range(3)]):
+        text_color = old_colors[all_averages.index(max(all_averages))]
+    if all([abs(dominant_color[i] - text_color[i]) < 20 for i in range(3)]):
+        text_color = old_colors[all_averages.index(min(all_averages))]
+    if all([abs(dominant_color[i] - text_color[i]) < 20 for i in range(3)]):
         text_color = (255, 255, 255)
     end = time.perf_counter()
     logger.info(f'Color extraction time: {end - start}')

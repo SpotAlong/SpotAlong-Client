@@ -57,7 +57,7 @@ from utils.constants import *
 
 QtGui.QFont = DpiFont
 
-data_dir = user_data_dir('SpotAlongTesting', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
 forward_data_dir = data_dir.replace('\\', '/')
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)-8s - %(name)-14s - %(message)s')
@@ -137,7 +137,7 @@ class MainUI(UiMainWindow):
                      '16x16\\cil-arrow-bottom', '16x16\\cil-arrow-top', '24x24\\cil-window-restore']
             scale_images(icons, ratio)
             self.scaled = 'scaled'
-        self.label_6.setText('v1.0.0')
+        self.label_6.setText(f'v{VERSION}')
         self.label_5.setText(f'Copyright © 2020-{time.gmtime().tm_year} CriticalElement // Check me out on GitHub!')
         url = self.client.mainstatus.clientavatar
         if url is not None:
@@ -556,7 +556,7 @@ class MainUI(UiMainWindow):
         self.disconnect_overlay = DisconnectBanner(parent=self)
 
         def log_out():
-            keyring.set_password('SpotAlongTesting', 'auth_token', '')
+            keyring.set_password('SpotAlong', 'auth_token', '')
             logging.info(f'Logging out as user {client.spotifyclient.clientUsername}')
             stop_all()
 
@@ -1247,14 +1247,14 @@ class MainUI(UiMainWindow):
                                                                  'been disabled. Logging out and logging back in '
                                                                  'should remedy the issue.', 'Close', lambda: None,
                                         error=True)
-        if self.client.mainstatus.playing_status == 'Listening':
-            QtCore.QTimer.singleShot(5000, self.client.send_queue_for_caching)
         self.threadsafe_snackbar_runner = Runnable()
         self.threadsafe_snackbar_runner.args = ()
         self.threadsafe_snackbar_runner.kwargs = {}
         self.threadsafe_snackbar_runner.callback.\
             connect(lambda: self.show_snack_bar(SnackBar(*self.threadsafe_snackbar_runner.args,
                                                          **self.threadsafe_snackbar_runner.kwargs)))
+        if self.client.mainstatus.playing_status == 'Listening':
+            QtCore.QTimer.singleShot(5000, lambda: Thread(target=self.client.send_queue_for_caching).start())
         logging.info(f'Start Time: {time.perf_counter() - getattr(QtCore, "start_time")}')
 
     def change_accent_color(self, color: tuple):
@@ -1443,7 +1443,7 @@ if __name__ == '__main__':
     app.setWindowIcon(QtGui.QIcon(data_dir + 'logo.ico'))
     if sys.platform == 'win32':
         import ctypes
-        appid = 'CriticalElement.SpotAlongTesting.SpotAlong.1.0'
+        appid = 'CriticalElement.SpotAlong.SpotAlong.1.0'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 
     if not os.path.isdir(data_dir):
@@ -1487,7 +1487,7 @@ if __name__ == '__main__':
                     return
                 else:
                     logging.warning('Authorization failed, directing to login screen')
-                    keyring.set_password('SpotAlongTesting', 'auth_token', '')
+                    keyring.set_password('SpotAlong', 'auth_token', '')
                     callback()
                     return
             time.sleep(0.1)

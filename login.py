@@ -33,7 +33,7 @@ This file provides an easy way to work with the SpotAlong login api.
 """
 
 
-data_dir = user_data_dir('SpotAlongTesting', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
 
 __all__ = ('login', 'refresh', 'create_user', 'redeem_code')
 
@@ -41,13 +41,13 @@ logger = logging.getLogger(__name__)
 
 
 def login():
-    if not keyring.get_password('SpotAlongTesting', 'auth_token'):
+    if not keyring.get_password('SpotAlong', 'auth_token'):
         return False
     else:
-        if not keyring.get_password('SpotAlongTesting', 'cookie'):
+        if not keyring.get_password('SpotAlong', 'cookie'):
             return False
     try:
-        auth_token_dict = json.loads(keyring.get_password('SpotAlongTesting', 'auth_token'))
+        auth_token_dict = json.loads(keyring.get_password('SpotAlong', 'auth_token'))
         access_token = auth_token_dict['access_token']
         refresh_token = auth_token_dict['refresh_token']
         timeout = auth_token_dict['timeout']
@@ -92,7 +92,7 @@ def refresh(access_token, refresh_token):
         response.update({'timeout': convert_from_utc_timestamp(response['timeout'])})
         token_dict = {'access_token': response['token'], 'refresh_token': response['refresh_token'],
                       'timeout': response['timeout']}
-        keyring.set_password('SpotAlongTesting', 'auth_token', json.dumps(token_dict))
+        keyring.set_password('SpotAlong', 'auth_token', json.dumps(token_dict))
         return response['token'], response['refresh_token'], response['timeout']
 
 
@@ -129,6 +129,6 @@ def redeem_code(code):
         response.update({'timeout': convert_from_utc_timestamp(response['timeout'])})
         token_dict = {'access_token': response['access_token'], 'refresh_token': response['refresh_token'],
                       'timeout': response['timeout']}
-        keyring.set_password('SpotAlongTesting', 'auth_token', json.dumps(token_dict))
+        keyring.set_password('SpotAlong', 'auth_token', json.dumps(token_dict))
         return response['access_token'], response['refresh_token'], response['timeout']
     return False

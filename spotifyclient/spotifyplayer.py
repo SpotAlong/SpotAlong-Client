@@ -229,20 +229,8 @@ class SpotifyPlayer:
             self._authorize()
 
     def _authorize(self):
-        if self.isinitialized:
-            self.isinitialized = False
-        access_token_headers = self._default_headers.copy()
-        access_token_headers.update({'spotify-app-version': '1.1.48.530.g38509c6c'})
-        access_token_url = 'https://open.spotify.com/get_access_token?reason=transport&productType=web_player'
-        if self.cookie_path:
-            with open(self.cookie_path, 'r') as f:
-                self.cookie_str = f.read()
-        if self.cookie_str:
-            access_token_headers.update({'cookie': self.cookie_str})
-            response = self._session.get(access_token_url, headers=access_token_headers)
-        else:
-            response = self._session.get(access_token_url, headers=access_token_headers, cookies=self.cj)
-        access_token_response = response.json()
+        self.isinitialized = False
+        access_token_response = self.get_access_token()
         self.access_token = access_token_response['accessToken']
         self.access_token_expire = access_token_response['accessTokenExpirationTimestampMs'] / 1000
 
@@ -256,10 +244,10 @@ class SpotifyPlayer:
         async def websocket():
             async with websockets.connect(guc_url, extra_headers=guc_headers) as ws:
                 self.ws = ws
+                self.isinitialized = True
+                self.websocket_task_event_loop = asyncio.get_event_loop()
                 while True:
                     try:
-                        self.isinitialized = True
-                        self.websocket_task_event_loop = asyncio.get_event_loop()
                         recv = await ws.recv()
                         load = json.loads(recv)
                         if load.get('headers'):
@@ -323,21 +311,37 @@ class SpotifyPlayer:
                     except websockets.ConnectionClosed:
                         return
 
+        async def wrap_ws():
+            try:
+                await websocket()
+            except asyncio.CancelledError:
+                return
+
         async def ping_loop():
             try:
                 while True:
                     if self.isinitialized and self.ws:
                         await self.ws.send('{"type": "ping"}')
                         self.sleep_task_event_loop = asyncio.get_event_loop()
-                        await asyncio.sleep(5)
+                        await asyncio.sleep(30)
                     else:
                         await asyncio.sleep(1)  # don't lag the gui thread
             except asyncio.CancelledError:
                 return
 
+        async def schedule_refresh():
+            try:
+                await asyncio.sleep(self.access_token_expire - time.time())
+                self.force_disconnect = True
+                self.refresh()
+                return
+            except asyncio.CancelledError:
+                return
+
         async def run_until_complete():
-            self.tasks.append(asyncio.create_task(websocket()))
+            self.tasks.append(asyncio.create_task(wrap_ws()))
             self.tasks.append(asyncio.create_task(ping_loop()))
+            self.tasks.append(asyncio.create_task(schedule_refresh()))
             await asyncio.gather(*self.tasks, return_exceptions=True)
 
             if not self.force_disconnect:
@@ -378,6 +382,8 @@ class SpotifyPlayer:
                         logger.error('An error occured while the SpotifyPlayer was reconnecting, '
                                      'retrying in 30 seconds: ', exc_info=e)
                         await asyncio.sleep(30)
+            else:
+                logger.info(f'Closing SpotifyPlayer task queue with id {self.device_id}')
 
         self.sleep_task_event_loop = None
         self.websocket_task_event_loop = None
@@ -514,16 +520,48 @@ class SpotifyPlayer:
         [task.cancel() for task in self.tasks]
 
     def disconnect(self):
-        self.force_disconnect = True
         self.websocket_task_event_loop.create_task(self.ws.close())
+        [task.cancel() for task in self.tasks]
+        self.force_disconnect = True
+
+    def get_access_token(self):
+        access_token_headers = self._default_headers.copy()
+        access_token_headers.update({'spotify-app-version': '1.1.48.530.g38509c6c',
+                                     'referer': 'https://accounts.spotify.com'})
+        access_token_url = 'https://open.spotify.com/get_access_token?reason=transport&productType=web_player'
+        if self.cookie_path:
+            with open(self.cookie_path, 'r') as f:
+                self.cookie_str = f.read()
+        if self.cookie_str:
+            access_token_headers.update({'cookie': self.cookie_str})
+            response = self._session.get(access_token_url, headers=access_token_headers)
+        else:
+            response = self._session.get(access_token_url, headers=access_token_headers, cookies=self.cj)
+        return response.json()
+
+    def refresh(self, retries=0):
+        try:
+            self.disconnect()
+            time.sleep(2)
+            self._authorize()
+            while not self.isinitialized:
+                time.sleep(0.1)
+            time.sleep(1)
+            self.disconnected = False
+            self.force_disconnect = False
+        except Exception as exc:
+            if retries > 1:
+                logger.error('The maximum number of retries was exceeded while attempting to refresh the access token:',
+                             exc_info=exc)
+                return
+            logger.error('An unexpected error occured while refreshing the access token, retrying: ', exc_info=exc)
+            self.refresh(retries + 1)
 
     def command(self, command_dict, retries=0):
         if retries > 1:
             raise RecursionError('Max amount of retries reached (2)')
         if self.access_token_expire < time.time():
-            self._authorize()
-            while not self.isinitialized:
-                pass
+            self.refresh()
         headers = {'Authorization': f'Bearer {self.access_token}'}
         if self.active_device_id:
             currently_playing_device = self.active_device_id

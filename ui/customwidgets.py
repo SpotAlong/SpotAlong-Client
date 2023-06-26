@@ -52,7 +52,7 @@ QtGui.QFont = DpiFont
 if typing.TYPE_CHECKING:
     from app import MainUI
 
-data_dir = user_data_dir('SpotAlongTesting', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
 forward_data_dir = data_dir.replace('\\', '/')
 logger = logging.getLogger(__name__)
 

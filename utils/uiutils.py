@@ -27,7 +27,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QPushButton
 from PyQt5.QtGui import QFont, QGuiApplication
 from PyQt5 import QtCore
 
-data_dir = user_data_dir('SpotAlongTesting', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
 
 __all__ = ('limit_text', 'limit_text_smart', 'limit_text_rich', 'safe_color', 'Runnable', 'DpiFont', 'adjust_sizing',
            'adj', 'adj_style', 'screen_height', 'dpi', 'get_ratio', 'scale_images', 'scale_one')

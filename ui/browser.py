@@ -29,7 +29,7 @@ from appdirs import user_data_dir
 
 from utils.uiutils import adjust_sizing, get_ratio, scale_images
 
-data_dir = user_data_dir('SpotAlongTesting', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
 forward_data_dir = data_dir.replace('\\', '/')
 
 
@@ -235,7 +235,7 @@ class Browser(QWidget):
     def tostring(self):
         if bytearray(self.cookies[-1].name()).decode() == 'sp_key':
             cookie = ' '.join([bytearray(cookie.toRawForm()).decode().split(';')[0] + ';' for cookie in self.cookies])
-            keyring.set_password('SpotAlongTesting', 'cookie', cookie)  # I could do a better job obfuscating this, but since
+            keyring.set_password('SpotAlong', 'cookie', cookie)  # I could do a better job obfuscating this, but since
             # the code is open source it won't stop anyone who really wants to steal the cookie
 
 

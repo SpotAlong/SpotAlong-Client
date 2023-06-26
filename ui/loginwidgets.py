@@ -29,13 +29,13 @@ from appdirs import user_data_dir
 from app import MainUI
 from utils.login import *
 from ui.browser import Browser
-from utils.constants import REGULAR_BASE
+from utils.constants import REGULAR_BASE, VERSION
 from utils.uiutils import DpiFont, adjust_sizing, get_ratio, scale_one
 
 
 QtGui.QFont = DpiFont
 
-data_dir = user_data_dir('SpotAlongTesting', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
 forward_data_dir = data_dir.replace('\\', '/')
 
 
@@ -184,8 +184,7 @@ class LoggingInUi(QtWidgets.QMainWindow):
             assert cb
             cb()
         except:  # noqa
-            if self.loadingscreen:
-                self.loadingscreen.close()  # this is a dumb workaround
+            self.loadingscreen.close() if self.loadingscreen else None  # this is a dumb workaround
             self.starting.update({'second': 1})
             QtWidgets.QApplication.setQuitOnLastWindowClosed(True)
             QtWidgets.QApplication.exit(-4)
@@ -606,7 +605,7 @@ class LoginUi(QtWidgets.QMainWindow):
         self.pushButton.setText('Login with Spotify           ')
         self.label_3.setText('After logging in, you will be given a code. \nEnter that code here:')
         self.pushButton_2.setText('Verify Code')
-        self.label_4.setText('Created By: CriticalElement#8820')
+        self.label_4.setText(f'v{VERSION}')
         self.browser = None
 
         def callback(auth_url, _):

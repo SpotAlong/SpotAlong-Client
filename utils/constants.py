@@ -16,6 +16,6 @@ Copyright (C) 2020-Present CriticalElement
     If not, see <https://www.gnu.org/licenses/>.
 """
 
-BASE_URL = 'http://localhost:8800/api'
-REGULAR_BASE = 'http://localhost:8800/'
+BASE_URL = 'http://192.168.1.84:8800/api'
+REGULAR_BASE = 'http://192.168.1.84:8800/'
 VERSION = '1.0.0'  # change this at your own risk
