@@ -121,9 +121,9 @@ class LoggingInUi(QtWidgets.QMainWindow):
 
     def start_loading_screen(self):
         self.timer.stop()
-        self.loadingscreen = LoadingScreenUi(self.starting)
         self.hide()
         self.close()
+        self.loadingscreen = LoadingScreenUi(self.starting)
         user_func = self.user_func
         starting = self.starting
         loadingscreen = self.loadingscreen
@@ -349,6 +349,7 @@ class LoadingScreenUi(QtWidgets.QMainWindow):
                                       self.starting['third'], self.progressBar)
             self.main_window.failure_combo_box_changed = time.time()
             self.main_window.comboBox.setCurrentIndex(self.starting['third'].song_broadcast)
+            self.hide()
             self.main_window.show()
             self.main_window.setWindowTitle('Home')
         except Exception as exc:

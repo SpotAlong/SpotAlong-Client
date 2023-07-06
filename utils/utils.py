@@ -116,12 +116,19 @@ def extract_color(url):
                 dominant_color = colors[index]
     dark_color = tuple([max(0, c - 30) for c in dominant_color])
     all_averages = [np.mean(c) for c in old_colors]
-    if all([abs(dominant_color[i] - text_color[i]) < 20 for i in range(3)]):
+
+    def check_closeness(dominant, text):
+        # returns True if the difference in rgb values is less than or equal to 20 for at least two color channels
+        return sum([int(abs(dominant[col] - text[col]) <= 20) for col in range(3)]) >= 2
+
+    if check_closeness(dominant_color, text_color):
         text_color = old_colors[all_averages.index(max(all_averages))]
-    if all([abs(dominant_color[i] - text_color[i]) < 20 for i in range(3)]):
+    if check_closeness(dominant_color, text_color):
         text_color = old_colors[all_averages.index(min(all_averages))]
-    if all([abs(dominant_color[i] - text_color[i]) < 20 for i in range(3)]):
+    if check_closeness(dominant_color, text_color):
         text_color = (255, 255, 255)
+    if check_closeness(dominant_color, text_color):
+        text_color = (0, 0, 0)
     end = time.perf_counter()
     logger.info(f'Color extraction time: {end - start}')
     colors_cache.update({album_id: [list(dominant_color), list(dark_color), list(text_color)]})

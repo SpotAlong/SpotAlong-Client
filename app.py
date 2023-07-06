@@ -107,7 +107,7 @@ class MainUI(UiMainWindow):
         self.active_dialog: typing.Optional[Dialog] = None
         self.animation_timer: typing.Optional[QtCore.QTimer] = None
         self.current_snack_bar: typing.Optional[SnackBar] = None
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Window | QtCore.Qt.WindowMinMaxButtonsHint)
         self.widgets_to_ignore = []
         app = QtCore.QCoreApplication.instance()
         self.setWindowOpacity(window_transparency)
@@ -141,7 +141,7 @@ class MainUI(UiMainWindow):
         self.label_5.setText(f'Copyright © 2020-{time.gmtime().tm_year} CriticalElement // Check me out on GitHub!')
         url = self.client.mainstatus.clientavatar
         if url is not None:
-            img_data = requests.get(url, timeout=5).content
+            img_data = requests.get(url, timeout=15).content
             with open(data_dir + f'icon{self.client.mainstatus.client_id}.png', 'wb') as handler:
                 handler.write(img_data)
         else:
@@ -1291,6 +1291,7 @@ class MainUI(UiMainWindow):
             snack_bar.move_to_pos()
             snack_bar.animation.start()
             QtCore.QTimer.singleShot(4000, lambda: self.close_snack_bar(snack_bar))
+            app.alert(self)
 
         if self.current_snack_bar is not None:
             self.close_snack_bar(self.current_snack_bar)
@@ -1569,7 +1570,7 @@ if __name__ == '__main__':
             if hasattr(app, 'client'):
                 app.client.disconnected = True
                 if app.client.spotifyplayer:
-                    app.client.spotifyplayer.force_disconnect()
+                    app.client.spotifyplayer.disconnect()
                 app.client.client.disconnect()
         except Exception as exc:
             logging.error('Error occured while closing client: ', exc_info=exc)

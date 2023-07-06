@@ -67,7 +67,7 @@ def login():
             return refresh_response
     eligible_url = BASE_URL + '/login/eligible'
     try:
-        resp = requests.get(eligible_url, headers={'authorization': access_token})
+        resp = requests.get(eligible_url, headers={'authorization': access_token}, timeout=15)
     except (requests.RequestException, requests.ConnectionError) as e:
         logger.error('Could not connect to the server', exc_info=e)
         return False
@@ -75,7 +75,7 @@ def login():
         refresh_response = refresh(access_token, refresh_token)
         if refresh_response:
             return refresh_response
-    elif resp.status_code == 204:
+    elif resp.ok:
         return access_token, refresh_token, timeout
     return False
 
@@ -88,7 +88,7 @@ def refresh(access_token, refresh_token):
     requests.get(REGULAR_BASE)
     try:
         refresh_resp = requests.post(refresh_url, headers={'authorization': access_token},
-                                     data={'refresh_token': refresh_token}, timeout=5)
+                                     data={'refresh_token': refresh_token}, timeout=15)
     except (requests.exceptions.ConnectionError, requests.exceptions.RequestException) as e:
         logger.error('Could not connect to the server', exc_info=e)
         return False

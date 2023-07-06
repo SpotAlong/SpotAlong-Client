@@ -122,6 +122,6 @@ class SpotifyClient(object):
     def user_update(self):
         self.clientUsername = self.user_data['display_name']
         if self.user_data['images']:
-            self.clientAvatar = self.user_data['images'][0]['url']
+            self.clientAvatar = self.user_data['images'][-1]['url']
         else:
             self.clientAvatar = None

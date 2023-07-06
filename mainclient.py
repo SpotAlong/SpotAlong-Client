@@ -49,7 +49,6 @@ watcher = logging.StreamHandler(stream=stream_io)
 watcher.setFormatter(logging.Formatter('%(message)s'))
 watcher.setLevel(logging.INFO)
 
-
 data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
 
 
@@ -152,6 +151,7 @@ class MainClient:
                                                                    'version': VERSION},
                                             namespaces=['/api/authorization'])
                         logger.info('Websocket reconnection successful')
+                        self.spotifyplayer.attempt_reconnect_time = 0
                         self.client.start_background_task(self.client.wait)
                         self.client.start_background_task(self.check_logs)
                         QtCore.QTimer.singleShot(0, self.ui.disconnect_overlay.hide)
@@ -248,7 +248,7 @@ class MainClient:
                 id_ = data_['id']
                 rand = random.randint(0, 10000)
                 if data_.get('images', None):
-                    url = data_['images'][0]['url']
+                    url = data_['images'][-1]['url']
                     img_data = requests.get(url, timeout=5).content
                     with open(data_dir + f'tempicon{rand}{id_}.png', 'wb') as handler:
                         handler.write(img_data)
@@ -276,8 +276,7 @@ class MainClient:
                 else:
                     text_color = [255, 255, 255]
                 with open(data_dir + 'profile_cache.json', 'w') as imagefile:
-                    self.profile_cache.update({id_:
-                                               [list(dominant_color), dark_color, text_color]})
+                    self.profile_cache.update({id_: [list(dominant_color), dark_color, text_color]})
                     json.dump(self.profile_cache, imagefile, indent=4)
             except (FileNotFoundError, OSError, PermissionError):
                 pass
@@ -454,8 +453,8 @@ class MainClient:
                         logger.critical(f'A critical error occured with authorization, exiting: {resp.json()}')
                         self.quit(401)
                     resp = getattr(requests, request_type)(url, data=data,
-                                                           headers={'authorization': self._access_token}, timeout=
-                                                           timeout)
+                                                           headers={'authorization': self._access_token},
+                                                           timeout=timeout)
                     func = signature(callback)
                     if len(func.parameters) > 0:
                         callback(resp)

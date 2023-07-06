@@ -41,9 +41,9 @@ SetOutPath $INSTDIR
 
 InitPluginsDir
 
-AddSize 107683
+File ".\dist\app.zip"
 
-nsisunz::UnzipToStack "C:\Users\prana\PycharmProjects\SpotAlong\SpotAlong-Client\dist\app.zip" "$INSTDIR"
+nsisunz::UnzipToStack "$INSTDIR\app.zip" "$INSTDIR"
 
 Pop $0
 StrCmp $0 "success" ok
@@ -56,6 +56,8 @@ next:
   Pop $0
   DetailPrint $0
 StrCmp $0 "" 0 next ; pop strings until a blank one arrives
+
+Delete "$INSTDIR\app.zip"
 
 CreateShortcut "$SMPROGRAMS\SpotAlong.lnk" "$INSTDIR\SpotAlong.exe"
 
@@ -76,6 +78,8 @@ SectionEnd
 Section "Uninstall"
 
 Delete "$SMPROGRAMS\SpotAlong.lnk"
+
+DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}"
 
 IfFileExists "$INSTDIR\SpotAlong.exe" file_found end_if
 

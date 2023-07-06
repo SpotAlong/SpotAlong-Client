@@ -93,7 +93,7 @@ class PartialStatusWidget:
         self.accent_color = accent_color
         url = icon_url
         if url:
-            img_data = requests.get(url, timeout=5).content
+            img_data = requests.get(url, timeout=15).content
             with open(data_dir + f'statusicon{client_id}.png', 'wb') as handler:
                 handler.write(img_data)
         else:
@@ -469,7 +469,7 @@ class PartialBasicUserStatusWidget:
             url = icon_url
             rand = random.randint(0, 10000)
             if url is not None:
-                img_data = requests.get(url, timeout=5).content
+                img_data = requests.get(url, timeout=15).content
                 with open(data_dir + f'partialicon{rand}{mainstatus.client_id}.png', 'wb') as handler:
                     handler.write(img_data)
             else:
@@ -1405,7 +1405,7 @@ class PlaybackController(QtWidgets.QWidget):
         self.verticalLayout.addWidget(self.horizontalFrame)
         self.regenerate_icons()
         self.styles_to_ignore = [self.horizontalSlider, self.horizontalSlider_2]
-        self.spotifyplayer.add_event_reciever(lambda: QtCore.QTimer().singleShot(0, self.regenerate_icons))
+        self.spotifyplayer.add_event_reciever(self.event_regenerate)
         self.snack_bar_callback = Runnable()
         snackbar = SnackBar('An unexpected error occured; please try again.', True, True)
         self.snack_bar_callback.callback.connect(lambda: mainui.show_snack_bar(snackbar))
@@ -1426,10 +1426,12 @@ class PlaybackController(QtWidgets.QWidget):
     def regenerate_icons(self):
         if self.spotifyplayer.disconnected:
             mainui.horizontalFrame5.setFixedHeight(0)
-            mainui.active_dialog = Dialog('Disconnected', 'A network problem occured, and the playback controller was'
-                                                          ' disconnected. It will attempt to reconnect every 30 '
-                                                          'seconds, and then the playback controller will re-appear.',
-                                          'Close', lambda: None, error=True)
+            if not mainui.client.disconnected:
+                mainui.active_dialog = Dialog('Disconnected', 'A network problem occured, and the playback controller '
+                                                              'was disconnected. It will attempt to reconnect every 30 '
+                                                              'seconds, and then the playback controller will '
+                                                              're-appear.',
+                                              'Close', lambda: None, error=True)
         else:
             mainui.horizontalFrame5.setFixedHeight(120 * self.ratio)
             if mainui.active_dialog:
@@ -1605,6 +1607,12 @@ class PlaybackController(QtWidgets.QWidget):
                     border-radius: 5px;
                     }""").replace('replace', repr(self.text_color)))
 
+    def event_regenerate(self):
+        QtCore.QTimer().singleShot(0, self.regenerate_icons)
+
+    def __del__(self):
+        self.spotifyplayer.remove_event_reciever(self.event_regenerate)
+
 
 class PartialInboundFriendRequest:
     def __init__(self, request, request_id, ui, client):
@@ -1616,8 +1624,8 @@ class PartialInboundFriendRequest:
         self.sender_id = self.sender['id']
         if not os.path.exists(data_dir + f'icon{self.sender_id}.png'):
             if self.sender['images']:
-                url = self.sender['images'][0]['url']
-                img_data = requests.get(url, timeout=5).content
+                url = self.sender['images'][-1]['url']
+                img_data = requests.get(url, timeout=15).content
                 with open(data_dir + f'icon{self.sender_id}.png', 'wb') as handler:
                     handler.write(img_data)
             else:
@@ -1800,7 +1808,7 @@ class PartialOutboundFriendRequest:
         self.reciever_id = self.reciever['id']
         if self.reciever['images']:
             url = self.reciever['images'][0]['url']
-            img_data = requests.get(url, timeout=5).content
+            img_data = requests.get(url, timeout=15).content
             with open(data_dir + f'icon{self.reciever_id}.png', 'wb') as handler:
                 handler.write(img_data)
         else:
@@ -1954,7 +1962,7 @@ class PartialPastFriendStatus:
             rand = random.randint(0, 10000)
             if self.friendstatus.clientavatar:
                 url = self.friendstatus.clientavatar
-                img_data = requests.get(url, timeout=5).content
+                img_data = requests.get(url, timeout=15).content
                 with open(data_dir + f'tempicon{rand}{self.friendstatus.client_id}.png', 'wb') as handler:
                     handler.write(img_data)
             else:
@@ -2782,7 +2790,7 @@ class PartialAdvancedUserStatus:
             rand = random.randint(0, 10000)
             if spotifysong.clientavatar:
                 url = spotifysong.clientavatar
-                img_data = requests.get(url, timeout=5).content
+                img_data = requests.get(url, timeout=15).content
                 with open(data_dir + f'tempicon{rand}{spotifysong.client_id}.png', 'wb') as handler:
                     handler.write(img_data)
             else:
@@ -3262,7 +3270,7 @@ class PartialListedFriendStatus:
             rand = random.randint(0, 10000)
             if spotifysong.clientavatar:
                 url = spotifysong.clientavatar
-                img_data = requests.get(url, timeout=5).content
+                img_data = requests.get(url, timeout=15).content
                 with open(data_dir + f'tempicon{rand}{spotifysong.client_id}.png', 'wb') as handler:
                     handler.write(img_data)
             else:

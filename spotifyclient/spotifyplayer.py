@@ -224,6 +224,7 @@ class SpotifyPlayer:
         self.ws = None
         self.disconnected = False
         self.player_state = {}
+        self.attempt_reconnect_time = 0
         if self.isinitialized:
             self.isinitialized = False
             self._authorize()
@@ -309,6 +310,7 @@ class SpotifyPlayer:
                             except AttributeError:
                                 pass
                     except websockets.ConnectionClosed:
+                        self._cancel_tasks()
                         return
 
         async def wrap_ws():
@@ -381,7 +383,10 @@ class SpotifyPlayer:
                     except Exception as e:
                         logger.error('An error occured while the SpotifyPlayer was reconnecting, '
                                      'retrying in 30 seconds: ', exc_info=e)
-                        await asyncio.sleep(30)
+                        self.attempt_reconnect_time = time.time() + 28
+                        while time.time() < self.attempt_reconnect_time:
+                            await asyncio.sleep(1)
+                        await asyncio.sleep(2)
             else:
                 logger.info(f'Closing SpotifyPlayer task queue with id {self.device_id}')
 
