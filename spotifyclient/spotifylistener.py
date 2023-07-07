@@ -87,12 +87,12 @@ class SpotifyListener:
                     time.sleep(2)
 
                 if self.spotifyplayer.disconnected:
-                    time.sleep(2)
+                    time.sleep(5)
                     if self.spotifyplayer.disconnected:
                         self.end('the SpotifyPlayer was disconnected, please try again later')
                         return
                 if self.friend_id not in self.client.friendstatus:
-                    self.end('1')
+                    self.end()
                     return
                 if self.client.friendstatus[self.friend_id].playing_type != 'track':
                     self.end('the host stopped listening to a playable track')
@@ -108,12 +108,12 @@ class SpotifyListener:
                         if abs(diff) > 3:
                             self.sync()
                     if not self.running:
-                        self.end('2')
+                        self.end()
                         return
                     time.sleep(1)
                 else:
                     if self.friend_id not in self.client.friendstatus:
-                        self.end('3')
+                        self.end()
                         return
                     if not self.client.friendstatus[self.friend_id].songid:
                         self.end('the host stopped listening to a playable track')
@@ -151,7 +151,7 @@ class SpotifyListener:
                     while self.client.mainstatus.songid != self.client.friendstatus[self.friend_id].songid:
                         time.sleep(1)
                         if not self.running:
-                            self.end('4')
+                            self.end()
                             return
         except (Exception, KeyError):
             self.end()

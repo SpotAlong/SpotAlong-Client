@@ -328,7 +328,7 @@ class MainClient:
             self.ui.worker2.update_friend_statuses()
 
         def add_to_queue(data):
-            if self.spotifyplayer.queue[0]['uri'] == data:
+            if self.spotifyplayer.queue and self.spotifyplayer.queue[0]['uri'] == data:
                 return
             try:
                 assert self.mainstatus.duration / 1000 - self.mainstatus.progress < 3
