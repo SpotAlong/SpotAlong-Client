@@ -231,7 +231,16 @@ class SpotifyPlayer:
 
     def _authorize(self):
         self.isinitialized = False
-        access_token_response = self.get_access_token()
+        access_token_response = False
+        attempts = 0
+        while not access_token_response:
+            try:
+                access_token_response = self.get_access_token()
+            except (requests.exceptions.ConnectionError, requests.exceptions.JSONDecodeError) as exc:
+                attempts += 1
+                if attempts == 3:
+                    raise exc
+                time.sleep(1)
         self.access_token = access_token_response['accessToken']
         self.access_token_expire = access_token_response['accessTokenExpirationTimestampMs'] / 1000
 
@@ -245,7 +254,6 @@ class SpotifyPlayer:
         async def websocket():
             async with websockets.connect(guc_url, extra_headers=guc_headers) as ws:
                 self.ws = ws
-                self.isinitialized = True
                 self.websocket_task_event_loop = asyncio.get_event_loop()
                 while True:
                     try:
@@ -334,7 +342,6 @@ class SpotifyPlayer:
         async def schedule_refresh():
             try:
                 await asyncio.sleep(self.access_token_expire - time.time())
-                self.force_disconnect = True
                 self.refresh()
                 return
             except asyncio.CancelledError:
@@ -375,11 +382,14 @@ class SpotifyPlayer:
                                 self.add_event_reciever(event)
                             except (RuntimeError, Exception):
                                 pass
-                            for ev in self.event_reciever:
-                                try:
-                                    ev()
-                                except Exception as e:
-                                    logger.error('An exception occured while executing an event listener: ', exc_info=e)
+                        time.sleep(2)
+                        for ev in self.event_reciever:
+                            try:
+                                ev()
+                            except Exception as e:
+                                logger.error('An exception occured while executing an event listener: ',
+                                             exc_info=e)
+                        return
                     except Exception as e:
                         logger.error('An error occured while the SpotifyPlayer was reconnecting, '
                                      'retrying in 30 seconds: ', exc_info=e)
@@ -399,6 +409,7 @@ class SpotifyPlayer:
 
         device_url = 'https://guc-spclient.spotify.com/track-playback/v1/devices'
         self.device_id = ''.join(random.choices(string.ascii_letters, k=40))
+        start = time.time()
         while True:
             if self.connection_id:
                 device_data = {"device": {"brand": "spotify", "capabilities":
@@ -420,6 +431,8 @@ class SpotifyPlayer:
                                "volume": 65535}
                 break
             else:
+                if time.time() - start > 10:
+                    raise TimeoutError
                 time.sleep(0.5)
 
         device_headers = self._default_headers.copy()
@@ -467,6 +480,7 @@ class SpotifyPlayer:
                 self.looping = 'off'
         except KeyError:
             pass
+        self.isinitialized = True
 
     def get_position(self):
         if not self.playing:
@@ -521,11 +535,13 @@ class SpotifyPlayer:
                                                                                               f' {self.access_token}'})
 
     def _cancel_tasks(self):
-        self.websocket_task_event_loop.create_task(self.ws.close())
+        if self.websocket_task_event_loop:
+            self.websocket_task_event_loop.create_task(self.ws.close())
         [task.cancel() for task in self.tasks]
 
     def disconnect(self):
-        self.websocket_task_event_loop.create_task(self.ws.close())
+        if self.websocket_task_event_loop:
+            self.websocket_task_event_loop.create_task(self.ws.close())
         [task.cancel() for task in self.tasks]
         self.force_disconnect = True
 
@@ -539,21 +555,27 @@ class SpotifyPlayer:
                 self.cookie_str = f.read()
         if self.cookie_str:
             access_token_headers.update({'cookie': self.cookie_str})
-            response = self._session.get(access_token_url, headers=access_token_headers)
+            try:
+                response = self._session.get(access_token_url, headers=access_token_headers)
+            except requests.exceptions.ConnectionError:
+                time.sleep(2)
+                response = self._session.get(access_token_url, headers=access_token_headers)
         else:
-            response = self._session.get(access_token_url, headers=access_token_headers, cookies=self.cj)
+            try:
+                response = self._session.get(access_token_url, headers=access_token_headers, cookies=self.cj)
+            except requests.exceptions.ConnectionError:
+                time.sleep(2)
+                response = self._session.get(access_token_url, headers=access_token_headers, cookies=self.cj)
         return response.json()
 
     def refresh(self, retries=0):
         try:
-            self.disconnect()
+            self._cancel_tasks()
             time.sleep(2)
-            self._authorize()
             while not self.isinitialized:
                 time.sleep(0.1)
             time.sleep(1)
             self.disconnected = False
-            self.force_disconnect = False
         except Exception as exc:
             if retries > 1:
                 logger.error('The maximum number of retries was exceeded while attempting to refresh the access token:',

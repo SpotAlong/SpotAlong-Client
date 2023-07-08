@@ -1425,13 +1425,20 @@ class PlaybackController(QtWidgets.QWidget):
 
     def regenerate_icons(self):
         if self.spotifyplayer.disconnected:
-            mainui.horizontalFrame5.setFixedHeight(0)
             if not mainui.client.disconnected:
-                mainui.active_dialog = Dialog('Disconnected', 'A network problem occured, and the playback controller '
-                                                              'was disconnected. It will attempt to reconnect every 30 '
-                                                              'seconds, and then the playback controller will '
-                                                              're-appear.',
-                                              'Close', lambda: None, error=True)
+
+                def cb():
+                    if not self.spotifyplayer.disconnected:
+                        return
+                    mainui.active_dialog = Dialog('Disconnected', 'A network problem occured, and the playback '
+                                                                  'controller was disconnected. It will attempt to '
+                                                                  'reconnect every 30 seconds, and then the playback '
+                                                                  'controller will re-appear.',
+                                                  'Close', lambda: None, error=True)
+                    mainui.horizontalFrame5.setFixedHeight(0)
+
+                QtCore.QTimer.singleShot(4000, cb)
+
         else:
             mainui.horizontalFrame5.setFixedHeight(120 * self.ratio)
             if mainui.active_dialog:
@@ -1611,7 +1618,10 @@ class PlaybackController(QtWidgets.QWidget):
         QtCore.QTimer().singleShot(0, self.regenerate_icons)
 
     def __del__(self):
-        self.spotifyplayer.remove_event_reciever(self.event_regenerate)
+        try:
+            self.spotifyplayer.remove_event_reciever(self.event_regenerate)
+        except TypeError:
+            pass
 
 
 class PartialInboundFriendRequest:

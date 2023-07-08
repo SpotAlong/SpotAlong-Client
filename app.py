@@ -1286,6 +1286,8 @@ class MainUI(UiMainWindow):
 
     def show_snack_bar(self, snack_bar: SnackBar):
         def show_():
+            if self.isHidden():
+                return
             self.current_snack_bar = snack_bar
             snack_bar.show()
             snack_bar.move_to_pos()

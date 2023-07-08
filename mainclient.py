@@ -114,8 +114,12 @@ class MainClient:
             if message.get('message', None) != 'Invalid credentials':
                 logger.error(f'The websocket connection was terminated for the following reason: '
                              f'{message.get("message", None)}')
-                self.client.disconnect()
-                self.disconnected = message.get("message", None)
+                if self.initialized and message.get('message') == 'Duplicate session detected':
+                    self.disconnected = False
+                    disconnect()
+                else:
+                    self.client.disconnect()
+                    self.disconnected = message.get("message", None)
             elif message.get('message', None) == 'Invalid credentials':
                 logger.error(f'The websocket connection was terminated for the following reason: '
                              f'{message.get("message", None)}')
@@ -493,7 +497,7 @@ class MainClient:
 
     def send_queue_for_caching(self):
         try:
-            if not self.spotifyplayer:
+            if not self.spotifyplayer or self.spotifyplayer.disconnected:
                 return
             queue = {'queue': json.dumps(self.spotifyplayer.queue)}
             self.invoke_request(BASE_URL + '/cache/precache', queue, request_type='POST', timeout=15)
@@ -505,7 +509,7 @@ class MainClient:
         if not self.listening_friends:
             return
         try:
-            if not self.spotifyplayer:
+            if not self.spotifyplayer or self.spotifyplayer.disconnected:
                 return
             song_uri = ''
             for song_dict in self.spotifyplayer.queue:
@@ -523,10 +527,10 @@ class MainClient:
                            exc_info=exc)
 
     def send_state_for_listening(self):
-        if not self.listening_friends:
+        if not self.listening_friends or not self.spotifyplayer:
             return
         try:
-            if not self.spotifyplayer or time.time() - self._last_time_of_state < 0.2:
+            if self.spotifyplayer.disconnected or time.time() - self._last_time_of_state < 0.2:
                 return
             self._last_time_of_state = time.time()
             songid = self.spotifyplayer.player_state['track']['uri'].split(':')[2]
