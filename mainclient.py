@@ -141,6 +141,8 @@ class MainClient:
                 return
             self.disconnected = True
             self.client.disconnect()
+            self.listening_friends = []
+            QtCore.QTimer.singleShot(0, self.ui.worker2.update_friend_statuses)
             logger.error('A connection error has occured')
             if self.initialized:
                 self.client.sleep(2)
