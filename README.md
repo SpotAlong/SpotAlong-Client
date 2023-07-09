@@ -4,7 +4,7 @@
 #### and discover new music tastes and interests through SpotAlong - all without needing premium.
 
 <br/>This is the PyQt5 frontend for SpotAlong. 
-Issues and pull requests are welcomed, but please note that most of the code was written 2+ years ago, when I had no clue about best practices with Python / PyQt5 and had mostly spaghetti code, and most of it is uncommented and relatively undocumented.
+Issues and pull requests are welcomed, but please note that most of the code was written 2+ years ago, when I had no clue about best practices with Python / PyQt5 and had mostly ~~spaghetti~~ horrendous code, and most of it is uncommented and relatively undocumented.
 
 
 # Roadmap
