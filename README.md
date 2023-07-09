@@ -1,5 +1,7 @@
 # SpotAlong-Client
 
+<img width="1137" alt="Group 1" src="https://github.com/CriticalElement/SpotAlong-Client/assets/50345351/70468c7e-a3f6-4760-80c2-5ed7871742fe">
+
 ### Listen along to your friends through Spotify
 #### and discover new music tastes and interests through SpotAlong - all without needing premium.
 
@@ -27,6 +29,7 @@ Add vote skips and song requests for group listening-along sessions
 
 # Code Breakdown
 ## /
+
 app.py: The entry point of the program, updates the ui with all the widgets and establishes update threads.
 <br/>mainclient.py: Handles the websocket connection with the SpotAlong server. 
 ## utils/
