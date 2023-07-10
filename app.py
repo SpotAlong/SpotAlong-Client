@@ -60,11 +60,18 @@ QtGui.QFont = DpiFont
 data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
 forward_data_dir = data_dir.replace('\\', '/')
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)-8s - %(name)-14s - %(message)s')
+level = logging.INFO
+if {'-d', '-v', '--debug', '--verbose'} & set(sys.argv):
+    level = logging.DEBUG
+formatter = logging.Formatter('%(asctime)s - %(levelname)-8s - %(name)-14s - %(message)s')
+logging.basicConfig(level=level, format='%(asctime)s - %(levelname)-8s - %(name)-14s - %(message)s')
+filehandler = logging.FileHandler(f'{data_dir}spotalong.log', 'w', 'utf-8')
+filehandler.setFormatter(formatter)
+logging.getLogger().addHandler(filehandler)
 logging_io = io.StringIO()
 console = logging.StreamHandler(stream=logging_io)
-console.setLevel(logging.INFO)
-console.setFormatter(logging.Formatter('%(asctime)s - %(levelname)-8s - %(name)-14s - %(message)s'))
+console.setLevel(level)
+console.setFormatter(formatter)
 logging.getLogger().addHandler(console)
 logging.getLogger().addHandler(mainclient.watcher)
 

@@ -623,7 +623,7 @@ class SpotifyPlayer:
                         logger.error(f'Command failed, attempting retry {retries}/1')
                         self.command(player_data, retries + 1)
                 else:
-                    logger.info(f'Command executed successfully. {player_data}')
+                    logger.debug(f'Command executed successfully. {player_data}')
         else:
             if 'url' in command_dict:
                 player_url = command_dict['url'].replace('player', self.device_id).replace('device',
@@ -649,7 +649,7 @@ class SpotifyPlayer:
                         except json.decoder.JSONDecodeError:
                             raise RequestException(f'Command failed.')
                     else:
-                        logger.info(f'Command executed successfully. {player_data}')
+                        logger.debug(f'Command executed successfully. {player_data}')
                         self.time_executed = time.time()
                         self.last_command = player_data
             else:
@@ -669,7 +669,7 @@ class SpotifyPlayer:
                     except json.decoder.JSONDecodeError:
                         raise RequestException(f'Command failed.')
                 else:
-                    logger.info(f'Command executed successfully. {player_data}')
+                    logger.debug(f'Command executed successfully. {player_data}')
                     self.time_executed = time.time()
                     self.last_command = player_data
         time.sleep(0.5)

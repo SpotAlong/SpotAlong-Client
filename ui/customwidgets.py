@@ -2217,9 +2217,6 @@ class PartialLogViewer:
             self.log = logs
         except IndexError:
             self.log = []
-        finally:
-            with open(data_dir + 'spotalong.log', 'w', encoding='utf-8') as f:
-                f.write(log.getvalue())
 
 
 @adjust_sizing()
