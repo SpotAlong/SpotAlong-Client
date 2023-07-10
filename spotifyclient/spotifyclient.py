@@ -88,7 +88,16 @@ class SpotifyClient(object):
                 else:
                     song_authors = None
                 playing_status = track['ex_data']['status']
-                track_info = SpotifySong(songname=song_name, song_authors=song_authors, progress=progress,
+                try:
+                    context_link = track['context']['external_urls']['spotify']
+                    context_type = track['context']['type']
+                    context_data = track['context']['href']
+                except (TypeError, KeyError):
+                    context_link = None
+                    context_type = None
+                    context_data = None
+                track_info = SpotifySong(songname=song_name, contexttype=context_type, contextdata=context_data,
+                                         contexturl=context_link, song_authors=song_authors, progress=progress,
                                          is_playing=is_playing, playing_type='local file',
                                          clientusername=self.clientUsername,
                                          clientavatar=self.clientAvatar, client_id=self.user_id,

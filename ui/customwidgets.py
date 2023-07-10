@@ -1990,7 +1990,7 @@ class PartialPastFriendStatus:
             except (FileNotFoundError, OSError, PermissionError):
                 pass
         if self.friendstatus.contexttype == 'playlist':
-            if self.friendstatus.songid:
+            if self.friendstatus.songname:
                 try:
                     id_ = self.friendstatus.contextdata.split('/')[-1]
                     resp = mainui.client.spotifyplayer.create_api_request(f'/playlists/{id_}').json()
@@ -2002,6 +2002,7 @@ class PartialPastFriendStatus:
                     still view it????? that makes no sense, so we have to check that the playlist is public and show it,
                     otherwise we will hide it
                     update: nvm they fixed it i guess
+                    update 2: only shows playlists that are featured on the users' profile
                     """
                 except Exception as e:
                     logger.error('An unexpected error has occured: ', exc_info=e)
@@ -2009,7 +2010,7 @@ class PartialPastFriendStatus:
             else:
                 self.playlist_name = None
         elif self.friendstatus.last_song.contexttype == 'playlist':
-            if self.friendstatus.last_song.songid:
+            if self.friendstatus.last_song.songname:
                 try:
                     id_ = self.friendstatus.last_song.contextdata.split('/')[-1]
                     resp = mainui.client.spotifyplayer.create_api_request(f'/playlists/{id_}').json()
@@ -2028,7 +2029,7 @@ class PartialPastFriendStatus:
     def convert_to_widget(self):
         if not self.friendstatus.songid and not self.friendstatus.last_song:
             return
-        if self.friendstatus.songid:
+        if self.friendstatus.songname:
             return PastFriendStatus(self.friendstatus, self.playlist_name)
         else:
             return PastFriendStatus(self.friendstatus.last_song, self.playlist_name,
@@ -4720,7 +4721,8 @@ class FriendUpdateThread(QtCore.QThread):
                     elif friend.songid != self.statuswidgets[id_].spotifysong.songid or \
                             friend.clientavatar != self.statuswidgets[id_].spotifysong.clientavatar or \
                             friend.playing_status != self.statuswidgets[id_].spotifysong.playing_status or \
-                            friend.clientusername != self.statuswidgets[id_].spotifysong.clientusername:
+                            friend.clientusername != self.statuswidgets[id_].spotifysong.clientusername or \
+                            friend.songname != self.statuswidgets[id_].spotifysong.songname:
                         if friend.playing_type not in ('None', 'ad', 'episode'):
                             status = friend.playing_status.lower()
                         else:
@@ -4840,7 +4842,8 @@ class FriendHistoryUpdateThread(QtCore.QThread):
                         widget = PartialPastFriendStatus(friend)
                         self.emitter.emit(widget)
                     else:
-                        if friend.songid != self.last_friends[id_].songid:
+                        if friend.songid != self.last_friends[id_].songid or \
+                                friend.songname != self.last_friends[id_].songname:
                             try:
                                 widget = PartialPastFriendStatus(friend)
                             except (requests.RequestException, Exception):
