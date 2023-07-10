@@ -8,6 +8,32 @@
 <br/>This is the PyQt5 frontend for SpotAlong. 
 Issues and pull requests are welcomed, but please note that most of the code was written 2+ years ago, when I had no clue about best practices with Python / PyQt5 and had mostly ~~spaghetti~~ horrendous code, and most of it is uncommented and relatively undocumented.
 
+# Installation
+Simply head over to the releases tab, and download and run the installer for the latest version. 
+
+# Manual Installation
+To manually install SpotAlong-Client, clone the repository to a folder of your choosing, then run the following commands according to your operating system. Please note that SpotAlong has only been tested on Python 3.8, and older or newer versions may not work.
+
+### Windows
+```
+python -m venv venv
+venv\Scripts\activate
+python -m pip install -r requirements.txt
+python app.py
+```
+Note that python may be replaced with `py -3` depending on your installation.<br/>
+You can also provide any of the `-d`, `-v`, `--debug`, or `--verbose` flags to `app.py` to set the logging level to `logging.DEBUG`.
+
+### MacOS / Linux
+```
+python3 -m venv venv
+source venv/bin/activate
+python -m pip install -r requirements.txt
+python app.py
+```
+
+## Compile Installer
+A helper script has been included at `build.py` that can automatically create the executable file, zip all dependencies, and compile the installer using makensis. Simply run the file and the installer will be created at `./SpotAlong-Installer.exe`. Please note that NSIS must be installed and makensis.exe must be added to PATH.
 
 # Roadmap
 
