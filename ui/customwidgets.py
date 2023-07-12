@@ -4630,6 +4630,7 @@ class MainUpdateThread(QtCore.QThread):
         self.oldpfp = None
         self.oldstatus = ''
         self.oldname = ''
+        self.oldsongid = ''
         self.running = False
 
     def run(self):
@@ -4638,6 +4639,7 @@ class MainUpdateThread(QtCore.QThread):
         self.oldpfp = self.client.mainstatus.clientavatar
         self.oldstatus = self.client.mainstatus.playing_status
         self.oldname = self.client.mainstatus.clientusername
+        self.oldsongid = self.client.mainstatus.songid
         while not mainui.isInitialized:
             time.sleep(0.1)
 
@@ -4649,7 +4651,8 @@ class MainUpdateThread(QtCore.QThread):
                 if self.oldsongname != self.client.mainstatus.songname or \
                         self.oldpfp != self.client.mainstatus.clientavatar or \
                         self.oldstatus.lower() != self.client.mainstatus.playing_status.lower() or \
-                        self.oldname != self.client.mainstatus.clientusername:
+                        self.oldname != self.client.mainstatus.clientusername or \
+                        self.oldsongid != self.client.mainstatus.songid:
 
                     if self.client.mainstatus.playing_type not in ('None', 'ad', 'episode'):
                         status = self.client.mainstatus.playing_status.lower()
@@ -4660,6 +4663,7 @@ class MainUpdateThread(QtCore.QThread):
                         self.oldpfp = self.client.mainstatus.clientavatar
                     self.oldstatus = self.client.mainstatus.playing_status
                     self.oldname = self.client.mainstatus.clientusername
+                    self.oldsongid = self.client.mainstatus.songid
                     mainuserstatus = PartialBasicUserStatusWidget(status, self.client.mainstatus.clientavatar,
                                                                   self.client.mainstatus)
                     if self.client.spotifyplayer and self.client.spotifyplayer.isinitialized:

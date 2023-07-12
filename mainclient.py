@@ -143,6 +143,9 @@ class MainClient:
             self.client.disconnect()
             self.listening_friends = []
             QtCore.QTimer.singleShot(0, self.ui.worker2.update_friend_statuses)
+            if self.ui.active_dialog:
+                if self.ui.active_dialog.error and "playback controller" in self.ui.active_dialog.label_2.text():
+                    self.ui.active_dialog.pushButton_2.click()
             logger.error('A connection error has occured')
             if self.initialized:
                 self.client.sleep(2)

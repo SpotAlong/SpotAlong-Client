@@ -393,10 +393,9 @@ class SpotifyPlayer:
                     except Exception as e:
                         logger.error('An error occured while the SpotifyPlayer was reconnecting, '
                                      'retrying in 30 seconds: ', exc_info=e)
-                        self.attempt_reconnect_time = time.time() + 28
+                        self.attempt_reconnect_time = time.time() + 30
                         while time.time() < self.attempt_reconnect_time:
                             await asyncio.sleep(1)
-                        await asyncio.sleep(2)
             else:
                 logger.info(f'Closing SpotifyPlayer task queue with id {self.device_id}')
 
