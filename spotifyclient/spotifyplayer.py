@@ -549,12 +549,12 @@ class SpotifyPlayer:
                                                                                               f' {self.access_token}'})
 
     def _cancel_tasks(self):
-        if self.websocket_task_event_loop:
+        if self.websocket_task_event_loop and self.ws:
             self.websocket_task_event_loop.create_task(self.ws.close())
         [task.cancel() for task in self.tasks]
 
     def disconnect(self):
-        if self.websocket_task_event_loop:
+        if self.websocket_task_event_loop and self.ws:
             self.websocket_task_event_loop.create_task(self.ws.close())
         [task.cancel() for task in self.tasks]
         self.force_disconnect = True
