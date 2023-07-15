@@ -65,6 +65,7 @@ if {'-d', '-v', '--debug', '--verbose'} & set(sys.argv):
     level = logging.DEBUG
 formatter = logging.Formatter('%(asctime)s - %(levelname)-8s - %(name)-14s - %(message)s')
 logging.basicConfig(level=level, format='%(asctime)s - %(levelname)-8s - %(name)-14s - %(message)s')
+os.makedirs(data_dir, exist_ok=True)
 filehandler = logging.FileHandler(f'{data_dir}spotalong.log', 'w', 'utf-8')
 filehandler.setFormatter(formatter)
 logging.getLogger().addHandler(filehandler)
@@ -1456,7 +1457,7 @@ if __name__ == '__main__':
         appid = 'CriticalElement.SpotAlong.SpotAlong.1.0'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 
-    if not os.path.isdir(data_dir):
+    if not os.path.isdir(f'{data_dir}/icons'):
         os.makedirs(data_dir)
         copyfile('logo.ico', data_dir + 'logo.ico')
         app.setWindowIcon(QtGui.QIcon(data_dir + 'logo.ico'))
