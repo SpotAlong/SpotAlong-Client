@@ -574,10 +574,14 @@ class LoginUi(QtWidgets.QMainWindow):
         self.label_4.setObjectName("label_4")
         self.pushButton_3 = QtWidgets.QPushButton(self)
         self.pushButton_3.setFixedSize(50, 50)
+        self.scaled = ''
+        if get_ratio() != 1:
+            scale_one(f'{data_dir}/icons/24x24/cil-x', get_ratio())
+            self.scaled = 'scaled'
         self.pushButton_3.setStyleSheet('''
             QPushButton {
                 background-color: rgb(44, 49, 60);
-                background-image: url(%sicons/24x24/cil-x.png);
+                background-image: url(%sicons/24x24/cil-x%s.png);
                 background-repeat: no-repeat;
                 background-position: center;
                 border: none;
@@ -587,7 +591,7 @@ class LoginUi(QtWidgets.QMainWindow):
             }
             QPushButton::pressed {
                 background-color: rgb(33, 92, 255);
-            }''' % forward_data_dir)
+            }''' % (forward_data_dir, self.scaled))
         self.pushButton_3.move(415, 0)
 
         def exit_():
