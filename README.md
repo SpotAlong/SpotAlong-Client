@@ -1,6 +1,6 @@
 # SpotAlong-Client
 
-<img width="1137" alt="Group 1" src="https://github.com/CriticalElement/SpotAlong-Client/assets/50345351/70468c7e-a3f6-4760-80c2-5ed7871742fe">
+<img width="1137" alt="Group 1" src="https://spotalong.github.io/static/Group%201.png">
 
 ### Listen along to your friends through Spotify
 #### and discover new music tastes and interests through SpotAlong - all without needing premium.
@@ -20,6 +20,7 @@ python -m venv venv
 venv\Scripts\activate
 python -m pip install -r requirements.txt
 python app.py
+
 ```
 Note that python may be replaced with `py -3` depending on your installation.<br/>
 You can also provide any of the `-d`, `-v`, `--debug`, or `--verbose` flags to `app.py` to set the logging level to `logging.DEBUG`.
