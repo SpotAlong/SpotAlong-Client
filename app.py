@@ -121,6 +121,7 @@ class MainUI(UiMainWindow):
         self.setWindowOpacity(window_transparency)
         self.setupUi(self)
         self.retranslateUi(self)
+        app.client = client
         client.ui = self
         ui.customwidgets.mainui = self
         utils.utils.ui = self
@@ -1519,8 +1520,14 @@ if __name__ == '__main__':
     menu.addAction(name)
     menu.addSeparator()
     quit_action = QtWidgets.QAction('Quit')
-    # noinspection PyTypeChecker
-    quit_action.triggered.connect(lambda: (tray.setVisible(False), app.quit()))
+
+    def quit_func():
+        app = QtCore.QCoreApplication.instance()
+        if hasattr(app, 'client'):
+            app.client.quit(0)
+        del app
+
+    quit_action.triggered.connect(quit_func)
     menu.addAction(quit_action)
     show_action = QtWidgets.QAction('Show')
 
