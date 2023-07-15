@@ -353,16 +353,9 @@ class SpotifyPlayer:
             self.tasks.append(asyncio.create_task(schedule_refresh()))
             await asyncio.gather(*self.tasks, return_exceptions=True)
 
-            if not self.force_disconnect:
+            if not self.force_disconnect and not self.disconnected:
                 event_recievers = self.event_reciever.copy()
                 self.event_reciever.clear()
-                self.active_device_id = ''
-                self.current_volume = 65535
-                self._last_timestamp = 0
-                self._last_position = 0
-                self.last_command = None
-                self.time_executed = 0
-                self.diff = 0
                 self.ws = None
                 self.isinitialized = False
                 self.disconnected = True
@@ -391,6 +384,14 @@ class SpotifyPlayer:
                                              exc_info=e)
                         return
                     except Exception as e:
+                        self.active_device_id = ''
+                        self.current_volume = 65535
+                        self._last_timestamp = 0
+                        self._last_position = 0
+                        self.last_command = None
+                        self.time_executed = 0
+                        self.diff = 0
+                        self._cancel_tasks()
                         logger.error('An error occured while the SpotifyPlayer was reconnecting, '
                                      'retrying in 30 seconds: ', exc_info=e)
                         self.attempt_reconnect_time = time.time() + 30
@@ -437,14 +438,23 @@ class SpotifyPlayer:
         device_headers = self._default_headers.copy()
         device_headers.update({'authorization': f'Bearer {self.access_token}'})
 
-        response = self._session.post(device_url, headers=device_headers, data=json.dumps(device_data))
+        try:
+            response = self._session.post(device_url, headers=device_headers, data=json.dumps(device_data))
+        except requests.exceptions.ConnectionError:
+            time.sleep(1)
+            response = self._session.post(device_url, headers=device_headers, data=json.dumps(device_data))
+
         if response.status_code == 200:
             logger.info(f'Successfully created Spotify device with id {self.device_id}.')
 
         notifications_url = f'https://api.spotify.com/v1/me/notifications/user?connection_id={self.connection_id}'
         notifications_headers = self._default_headers.copy()
         notifications_headers.update({'Authorization': f'Bearer {self.access_token}'})
-        self._session.put(notifications_url, headers=notifications_headers)
+        try:
+            self._session.put(notifications_url, headers=notifications_headers)
+        except requests.exceptions.ConnectionError:
+            time.sleep(1)
+            self._session.put(notifications_url, headers=notifications_headers)
 
         hobs_url = f'https://guc-spclient.spotify.com/connect-state/v1/devices/hobs_{self.device_id}'
         hobs_headers = self._default_headers.copy()
@@ -453,7 +463,12 @@ class SpotifyPlayer:
         hobs_data = {"member_type": "CONNECT_STATE", "device": {"device_info":
                                                                 {"capabilities": {"can_be_player": False,
                                                                                   "hidden": True}}}}
-        response = self._session.put(hobs_url, headers=hobs_headers, data=json.dumps(hobs_data))
+        try:
+            response = self._session.put(hobs_url, headers=hobs_headers, data=json.dumps(hobs_data))
+        except requests.exceptions.ConnectionError:
+            time.sleep(1)
+            response = self._session.put(hobs_url, headers=hobs_headers, data=json.dumps(hobs_data))
+
         try:
             self.queue = response.json()['player_state']['next_tracks']
         except KeyError:
@@ -583,12 +598,24 @@ class SpotifyPlayer:
             logger.error('An unexpected error occured while refreshing the access token, retrying: ', exc_info=exc)
             self.refresh(retries + 1)
 
-    def command(self, command_dict, retries=0):
+    def command(self, command_dict):
+        try:
+            self._command(command_dict)
+        except requests.exceptions.ConnectionError:
+            time.sleep(1)
+            self._command(command_dict)
+
+    def _command(self, command_dict, retries=0):
         if retries > 1:
             raise RecursionError('Max amount of retries reached (2)')
         if self.access_token_expire < time.time():
             self.refresh()
         headers = {'Authorization': f'Bearer {self.access_token}'}
+        start = time.time()
+        while not self.isinitialized:
+            time.sleep(0.25)
+            if time.time() - start > 10:
+                raise TimeoutError('SpotifyPlayer took too long to reconnect while attempting command')
         if self.active_device_id:
             currently_playing_device = self.active_device_id
         else:
@@ -620,7 +647,7 @@ class SpotifyPlayer:
                             if player_data.get('command'):
                                 player_data['command']['queue_revision'] = self.queue_revision
                         logger.error(f'Command failed, attempting retry {retries}/1')
-                        self.command(player_data, retries + 1)
+                        self._command(player_data, retries + 1)
                 else:
                     logger.debug(f'Command executed successfully. {player_data}')
         else:
@@ -644,7 +671,7 @@ class SpotifyPlayer:
                                     if command_dict.get('command'):
                                         command_dict['command']['queue_revision'] = self.queue_revision
                                 logger.error(f'Command failed, attempting retry {retries}/1')
-                                self.command(command_dict, retries + 1)
+                                self._command(command_dict, retries + 1)
                         except json.decoder.JSONDecodeError:
                             raise RequestException(f'Command failed.')
                     else:
@@ -664,7 +691,7 @@ class SpotifyPlayer:
                             if response.json().get('error_description') == 'queue_revision_mismatch':
                                 if command_dict.get('command'):
                                     command_dict['command']['queue_revision'] = self.queue_revision
-                            self.command(command_dict, retries + 1)
+                            self._command(command_dict, retries + 1)
                     except json.decoder.JSONDecodeError:
                         raise RequestException(f'Command failed.')
                 else:
