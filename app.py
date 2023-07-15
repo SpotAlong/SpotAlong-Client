@@ -1458,7 +1458,7 @@ if __name__ == '__main__':
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 
     if not os.path.isdir(f'{data_dir}/icons'):
-        os.makedirs(data_dir)
+        os.makedirs(data_dir, exist_ok=True)
         copyfile('logo.ico', data_dir + 'logo.ico')
         app.setWindowIcon(QtGui.QIcon(data_dir + 'logo.ico'))
         dialog = LoggingInUi(placeholder=True)
