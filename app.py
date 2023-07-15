@@ -1487,15 +1487,15 @@ if __name__ == '__main__':
             if client.disconnected:
                 dc = client.disconnected
 
-                def callback():
+                def callback(code=4):
                     progress_ui.close()
                     QtWidgets.QApplication.setQuitOnLastWindowClosed(True)
-                    QtWidgets.QApplication.exit(4)
-                    client.quit(400)
+                    QtWidgets.QApplication.exit(code)
+                    client.quit(code)
                     return
 
                 if isinstance(dc, str) and error_callback:
-                    error_callback.emitter.emit((dc, callback))
+                    error_callback.emitter.emit((dc, lambda: callback(code=-4)))
                     return
                 else:
                     logging.warning('Authorization failed, directing to login screen')
