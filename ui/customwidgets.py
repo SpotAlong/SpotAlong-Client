@@ -1774,7 +1774,10 @@ class InboundFriendRequest(QtWidgets.QWidget):
     def accept(self):
 
         def success():
-            self.hide()
+            try:
+                self.hide()
+            except RuntimeError:
+                pass
             self.callback()
 
         def failure():
@@ -1792,7 +1795,10 @@ class InboundFriendRequest(QtWidgets.QWidget):
     def decline(self):
 
         def success():
-            self.hide()
+            try:
+                self.hide()
+            except RuntimeError:
+                pass
             self.callback()
 
         def failure():
@@ -1946,7 +1952,10 @@ class OutboundFriendRequest(QtWidgets.QWidget):
     def decline(self):
 
         def success():
-            self.hide()
+            try:
+                self.hide()
+            except RuntimeError:
+                pass
             self.callback()
 
         def failure():
