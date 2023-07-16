@@ -21,7 +21,7 @@ venv\Scripts\activate
 python -m pip install -r requirements.txt
 python app.py
 ```
-Note that python may be replaced with `py -3` depending on your installation.<br/>
+Note that `python` (line 1 only) may be replaced with `py -3` depending on your installation.<br/>
 You can also provide any of the `-d`, `-v`, `--debug`, or `--verbose` flags to `app.py` to set the logging level to `logging.DEBUG`.
 
 ### MacOS / Linux
