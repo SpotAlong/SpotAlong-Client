@@ -37,19 +37,19 @@ A helper script has been included at `build.py` that can automatically create th
 
 # Roadmap
 
-## v1.0.0
+## v1.0.X
 Initial Release (windows only)
 
-## v1.0.1
+## v1.1.X
 Performance enhancements (speculative)
 
-## v1.0.2
+## v1.2.X
 Linux and MacOS builds
 
-## v1.1.0
+## v2.0.X
 Add an embedded, ad-blocking version of Spotify
 
-## v1.2.0
+## v3.0.X
 Add vote skips and song requests for group listening-along sessions
 
 
