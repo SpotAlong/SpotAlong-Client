@@ -1439,7 +1439,8 @@ class MainUI(UiMainWindow):
             self.active_dialog.move_dialog_pos()
         if self.isInitialized and self.current_snack_bar:
             self.current_snack_bar.move_to_pos()
-        self.overlay.setGeometry(self.rect())
+        if self.isInitialized:
+            self.overlay.setGeometry(self.rect())
 
 
 global app
