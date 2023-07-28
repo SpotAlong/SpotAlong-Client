@@ -357,11 +357,13 @@ class MainUI(UiMainWindow):
             f'<span style="color:rgb(29, 185, 84)">‎  {listening_friends} listening • </span>' 
             f'<span style="color:rgb(33, 92, 255)">{online_friends} online • </span>' 
             f'<span style="color:rgb(125, 125, 125)">{offline_friends} offline  </span>')
+        self.label_3.setTextFormat(QtCore.Qt.RichText)
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(20)
         self.label_3.setFont(font)
         self.label_3.setFixedHeight(100)
+        self.label_3.setWordWrap(True)
         progress_bar.setValue(80)
 
         self.horizontalLayout_6.setSpacing(2)
