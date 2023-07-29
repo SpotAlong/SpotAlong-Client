@@ -3223,8 +3223,11 @@ class AdvancedUserStatus(QtWidgets.QWidget):
             self.label_8.setText(f'{minutes}:{int(seconds):02}')
 
             def update_duration():
-                progress = mainui.client.friendstatus[self.user_id].progress
+                progress = mainui.client.friendstatus.get(self.user_id)
                 if progress:
+                    progress = progress.progress
+                    if not progress:
+                        return
                     progress_minutes = int(progress // 60)
                     progress_seconds = progress - progress_minutes * 60
                     self.label_7.setText(f'{progress_minutes}:{int(progress_seconds):02}')
@@ -4717,7 +4720,7 @@ class FriendUpdateThread(QtCore.QThread):
         while self.running:
             try:
                 for id_, friend in self.client.friendstatus.items():
-                    if id_ not in self.statuswidgets:
+                    if id_ not in self.statuswidgets.copy():
                         if friend.playing_type not in ('None', 'ad', 'episode'):
                             status = friend.playing_status.lower()
                         else:
@@ -4745,11 +4748,11 @@ class FriendUpdateThread(QtCore.QThread):
                         except PIL.UnidentifiedImageError:
                             advancedstatuswidget = PartialAdvancedUserStatus(friend, status)
                         self.emitter.emit((statuswidget, statuswidget, listedstatuswidget, advancedstatuswidget))
-                        self.update_friend_statuses()
-                for id_ in self.statuswidgets:
+                        QtCore.QTimer.singleShot(0, self.update_friend_statuses)
+                for id_ in self.statuswidgets.copy():
                     if id_ not in self.client.friendstatus:
                         self.emitter.emit(DeleteWidget(id_))
-                        self.update_friend_statuses()
+                        QtCore.QTimer.singleShot(0, self.update_friend_statuses)
             except (requests.RequestException, Exception):
                 sys.excepthook(*sys.exc_info())
             time.sleep(0.25)
@@ -4820,7 +4823,7 @@ class RequestUpdateThread(QtCore.QThread):
                         friend_request = PartialOutboundFriendRequest(data, request, self.ui, self.client)
                         self.emitter.emit(friend_request)
                 for request in self.outbound_last_requests:
-                    if request not in self.client.outbound_friend_requests:
+                    if request not in self.client.outbound_friend_requests.copy():
                         self.emitter.emit(DeleteWidget(request))
                 self.outbound_last_requests = self.client.outbound_friend_requests.copy()
             except (requests.RequestException, Exception):
@@ -4860,7 +4863,7 @@ class FriendHistoryUpdateThread(QtCore.QThread):
                                 widget = PartialPastFriendStatus(friend)
                             self.emitter.emit(widget)
                 for id_ in self.last_friends:
-                    if id_ not in self.client.friendstatus:
+                    if id_ not in self.client.friendstatus.copy():
                         self.emitter.emit(DeleteWidget(id_))
                 self.last_friends = self.client.friendstatus.copy()
             except (requests.RequestException, Exception):

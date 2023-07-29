@@ -326,7 +326,7 @@ class MainClient:
         def start_listening(data):
             if data not in self.listening_friends:
                 self.listening_friends.append(data)
-                self.ui.worker2.update_friend_statuses()
+                QtCore.QTimer.singleShot(0, self.ui.worker2.update_friend_statuses)
                 self.send_next_for_listening(force=True)
 
         def end_listening(data):
@@ -334,7 +334,7 @@ class MainClient:
                 self.listening_friends.pop(self.listening_friends.index(data))
             except ValueError:
                 pass
-            self.ui.worker2.update_friend_statuses()
+            QtCore.QTimer.singleShot(0, self.ui.worker2.update_friend_statuses)
 
         def add_to_queue(data):
             if self.spotifyplayer.queue and self.spotifyplayer.queue[0]['uri'] == data:
