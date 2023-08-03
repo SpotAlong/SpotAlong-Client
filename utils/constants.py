@@ -16,6 +16,36 @@ Copyright (C) 2020-Present CriticalElement
     If not, see <https://www.gnu.org/licenses/>.
 """
 
-BASE_URL = 'http://192.168.1.84:8800/api'
-REGULAR_BASE = 'http://192.168.1.84:8800/'
-VERSION = '1.0.0'  # change this at your own risk
+import json
+import logging
+import time
+
+import requests
+from appdirs import user_data_dir
+
+
+__all__ = ('BASE_URL', 'REGULAR_BASE', 'VERSION')
+logger = logging.getLogger(__name__)
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
+
+
+try:
+    if time.time() > 1722488400:
+        try:
+            text = requests.get('https://spotalong.github.io/url.json', timeout=5).text
+            with open(f'{data_dir}url.json', 'w') as f:
+                f.write(text)
+        except Exception as exc:
+            logger.warning('Arbitrary error occured when updating server url from lookup, reverting to defaults:',
+                           exc_info=exc)
+
+    with open(f'{data_dir}url.json', 'r') as f:
+        urls = json.load(f)
+        BASE_URL = urls['BASE_URL']
+        REGULAR_BASE = urls['REGULAR_BASE']
+except Exception as exc:
+    logger.warning('Arbitrary error occurred when getting server url, reverting to defaults: ', exc_info=exc)
+    BASE_URL = 'http://192.168.1.84:8800/api'
+    REGULAR_BASE = 'http://192.168.1.84:8800/'
+
+VERSION = '1.0.0'  # change this at your own risk (don't)
