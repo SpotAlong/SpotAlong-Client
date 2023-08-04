@@ -224,7 +224,9 @@ def clean_album_image_cache(url=None):
     album_images = [file.stat().st_size for file in Path(data_dir).glob('*album*') if file.is_file()]
     album_images_size = sum(album_images) / 1000000
     while album_images_size > ui.albumcachelimit:
-        album_images_created = [file for file in Path(data_dir).glob('*album*') if file.is_file()]
+        dont_delete = ['unknown_album.png', 'albumNone.png', 'partialalbumNone.png']
+        album_images_created = [file for file in Path(data_dir).glob('*album*') if file.is_file()
+                                and file.name not in dont_delete]
         created_time = sorted(album_images_created, key=lambda file: file.stat().st_ctime)
         created_time = sorted(created_time, key=lambda file: file.name, reverse=True)
         if len(created_time) > 1:
