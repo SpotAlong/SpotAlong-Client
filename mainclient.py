@@ -167,9 +167,9 @@ class MainClient:
                         return
                     except socketio.exceptions.ConnectionError as ex:
                         logger.error('A connection error occured while the websocket connection was reconnecting, '
-                                     'retrying in 15 seconds: ', exc_info=ex)
+                                     'retrying in 5 seconds: ', exc_info=ex)
                         self.client.disconnect()
-                        self.client.sleep(15)
+                        self.client.sleep(5)
 
         def get_friends(data=None):
             if data:

@@ -1432,7 +1432,7 @@ class PlaybackController(QtWidgets.QWidget):
                         return
                     mainui.active_dialog = Dialog('Disconnected', 'A network problem occured, and the playback '
                                                                   'controller was disconnected. It will attempt to '
-                                                                  'reconnect every 30 seconds, and then the playback '
+                                                                  'reconnect every 15 seconds, and then the playback '
                                                                   'controller will re-appear.',
                                                   'Close', lambda: None, error=True)
                     mainui.horizontalFrame5.setFixedHeight(0)

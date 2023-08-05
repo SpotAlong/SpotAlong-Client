@@ -393,8 +393,8 @@ class SpotifyPlayer:
                         self.diff = 0
                         self._cancel_tasks()
                         logger.error('An error occured while the SpotifyPlayer was reconnecting, '
-                                     'retrying in 30 seconds: ', exc_info=e)
-                        self.attempt_reconnect_time = time.time() + 30
+                                     'retrying in 15 seconds: ', exc_info=e)
+                        self.attempt_reconnect_time = time.time() + 15
                         while time.time() < self.attempt_reconnect_time:
                             await asyncio.sleep(1)
             else:
