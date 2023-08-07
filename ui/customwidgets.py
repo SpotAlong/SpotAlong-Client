@@ -298,6 +298,8 @@ class StatusWidget(QtWidgets.QWidget):
                 mainui.friendstatuswidgets[self.client_id].hide()
 
             def failure():
+                if sip.isdeleted(mainui):
+                    return
                 mainui.show_snack_bar(SnackBar(f'An unexpected error occured while trying to remove '
                                                f'{spotifysong.clientusername} as a friend, please try again.',
                                                True, True))
@@ -423,6 +425,8 @@ class FriendsListStatusWidget(QtWidgets.QWidget):
                 mainui.statuswidgets[self.client_id].hide()
 
             def failure():
+                if sip.isdeleted(mainui):
+                    return
                 mainui.show_snack_bar(SnackBar(f'An unexpected error occured while trying to remove '
                                                f'{spotifysong.clientusername} as a friend, please try again.',
                                                True, True))
@@ -1653,7 +1657,6 @@ class PartialInboundFriendRequest:
         return InboundFriendRequest(self.request, self.request_id, self.client, self.ui)
 
 
-@adjust_sizing()
 class InboundFriendRequest(QtWidgets.QWidget):
     def __init__(self, request, request_id, client, ui, *args, **kwargs):
         self.request = request
@@ -1670,14 +1673,13 @@ class InboundFriendRequest(QtWidgets.QWidget):
             icons = ['20x20\\cil-x', '20x20\\cil-check-alt']
             scale_images(icons, ratio)
             scaled = 'scaled'
-        self.resize(468, 53)
         self.setStyleSheet("background-color: rgb(39, 44, 54);"
-                           "border-radius: 10px; ")
+                           f"border-radius: {10 * ratio}px; ")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.horizontalFrame = QtWidgets.QFrame(self)
-        self.horizontalFrame.setMinimumSize(QtCore.QSize(0, 22))
+        self.horizontalFrame.setMinimumSize(QtCore.QSize(0, 22 * ratio))
         self.horizontalFrame.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.horizontalFrame.setObjectName("horizontalFrame")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.horizontalFrame)
@@ -1687,7 +1689,7 @@ class InboundFriendRequest(QtWidgets.QWidget):
         self.spacer.setFixedWidth(0)
         self.horizontalLayout_4.addWidget(self.spacer)
         self.label = QtWidgets.QLabel(self.horizontalFrame)
-        self.label.setFixedSize(40, 40)
+        self.label.setFixedSize(40 * ratio, 40 * ratio)
         self.label.setStyleSheet(f"border-image: url({forward_data_dir}icon{self.sender_id}.png);")
         self.label.setText("")
         self.label.setObjectName("label")
@@ -1699,15 +1701,15 @@ class InboundFriendRequest(QtWidgets.QWidget):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.label_2 = QtWidgets.QLabel(self.verticalFrame)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
         self.label_2.setSizePolicy(sizePolicy)
-        self.label_2.setFixedHeight(28)
+        self.label_2.setFixedHeight(28 * ratio)
         font = QtGui.QFont()
         font.setFamily("Segoe UI Semilight")
-        font.setPointSize(10)
+        font.setPointSize(10 * ratio)
         self.label_2.setFont(font)
         self.label_2.setStyleSheet("color: white;")
         self.label_2.setText(self.request['sender']['display_name'])
@@ -1716,6 +1718,7 @@ class InboundFriendRequest(QtWidgets.QWidget):
         self.label_3 = QtWidgets.QLabel(self.verticalFrame)
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
+        font.setPointSize(8 * ratio)
         self.label_3.setFont(font)
         self.label_3.setStyleSheet("color: rgb(200, 200, 200);")
         self.label_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
@@ -1724,9 +1727,9 @@ class InboundFriendRequest(QtWidgets.QWidget):
         self.verticalLayout.addWidget(self.label_3)
         self.horizontalLayout_4.addWidget(self.verticalFrame)
         self.horizontalFrame_2 = QtWidgets.QFrame(self.horizontalFrame)
-        self.horizontalFrame_2.setMaximumSize(QtCore.QSize(120, 16777215))
+        self.horizontalFrame_2.setMaximumSize(QtCore.QSize(120 * ratio, 16777215))
         self.horizontalFrame_2.setStyleSheet("QPushButton {\n"
-                                             "    border-radius: 17px;\n"
+                                             f"    border-radius: {17 * ratio}px;\n"
                                              "    background-color: rgb(33, 37, 43);\n"
                                              "}\n"
                                              "\n"
@@ -1739,12 +1742,12 @@ class InboundFriendRequest(QtWidgets.QWidget):
                                              "}")
         self.horizontalFrame_2.setObjectName("horizontalFrame_2")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalFrame_2)
-        self.horizontalLayout_2.setContentsMargins(14, 0, 14, 0)
-        self.horizontalLayout_2.setSpacing(23)
+        self.horizontalLayout_2.setContentsMargins(14 * ratio, 0, 14 * ratio, 0)
+        self.horizontalLayout_2.setSpacing(23 * ratio)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.pushButton = QtWidgets.QPushButton(self.horizontalFrame_2)
-        self.pushButton.setMinimumSize(QtCore.QSize(35, 35))
-        self.pushButton.setMaximumSize(QtCore.QSize(35, 35))
+        self.pushButton.setMinimumSize(QtCore.QSize(35 * ratio, 35 * ratio))
+        self.pushButton.setMaximumSize(QtCore.QSize(35 * ratio, 35 * ratio))
         self.pushButton.setStyleSheet(
             f"background-image: url({forward_data_dir}icons/20x20/cil-x{scaled}.png);\n"
             "background-position: center;\n"
@@ -1753,8 +1756,8 @@ class InboundFriendRequest(QtWidgets.QWidget):
         self.pushButton.setObjectName("pushButton")
         self.horizontalLayout_2.addWidget(self.pushButton)
         self.pushButton_2 = QtWidgets.QPushButton(self.horizontalFrame_2)
-        self.pushButton_2.setMinimumSize(QtCore.QSize(35, 35))
-        self.pushButton_2.setMaximumSize(QtCore.QSize(35, 35))
+        self.pushButton_2.setMinimumSize(QtCore.QSize(35 * ratio, 35 * ratio))
+        self.pushButton_2.setMaximumSize(QtCore.QSize(35 * ratio, 35 * ratio))
         self.pushButton_2.setStyleSheet(
             f"background-image: url({forward_data_dir}icons/20x20/cil-check-alt{scaled}.png);\n"
             "background-position: center;\n"
@@ -1766,10 +1769,8 @@ class InboundFriendRequest(QtWidgets.QWidget):
         self.verticalLayout_2.addWidget(self.horizontalFrame)
         self.pushButton.clicked.connect(self.decline)
         self.pushButton_2.clicked.connect(self.accept)
-        self.setFixedHeight(50)
-
-    def callback(self):
-        Thread(target=lambda: os.remove(f'{data_dir}icon{self.request["sender"]["id"]}.png')).start()
+        self.setFixedHeight(50 * ratio)
+        self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred))
 
     def accept(self):
 
@@ -1778,9 +1779,10 @@ class InboundFriendRequest(QtWidgets.QWidget):
                 self.hide()
             except RuntimeError:
                 pass
-            self.callback()
 
         def failure():
+            if sip.isdeleted(mainui):
+                return
             mainui.show_snack_bar(SnackBar('An unexpected error occured while the friend request was being accepted, '
                                            'please try again.', False, True))
 
@@ -1799,9 +1801,10 @@ class InboundFriendRequest(QtWidgets.QWidget):
                 self.hide()
             except RuntimeError:
                 pass
-            self.callback()
 
         def failure():
+            if sip.isdeleted(mainui):
+                return
             mainui.show_snack_bar(SnackBar('An unexpected error occured while the friend request was being declined, '
                                            'please try again.', False, True))
 
@@ -1842,7 +1845,6 @@ class PartialOutboundFriendRequest:
         return OutboundFriendRequest(self.request, self.request_id, self.client, self.ui)
 
 
-@adjust_sizing()
 class OutboundFriendRequest(QtWidgets.QWidget):
     def __init__(self, request, request_id, client, ui, *args, **kwargs):
         self.request = request
@@ -1853,20 +1855,19 @@ class OutboundFriendRequest(QtWidgets.QWidget):
         self.reciever_id = self.reciever['id']
         super().__init__(*args, **kwargs)
         self.setObjectName("Form")
-        self.resize(468, 53)
-        self.setStyleSheet("background-color: rgb(39, 44, 54);"
-                           "border-radius: 10px; ")
         scaled = ''
         ratio = get_ratio()
         if ratio != 1:
             icons = ['20x20\\cil-x']
             scale_images(icons, ratio)
             scaled = 'scaled'
+        self.setStyleSheet("background-color: rgb(39, 44, 54);"
+                           f"border-radius: {10 * ratio}px; ")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.horizontalFrame = QtWidgets.QFrame(self)
-        self.horizontalFrame.setMinimumSize(QtCore.QSize(0, 22))
+        self.horizontalFrame.setMinimumSize(QtCore.QSize(0, 22 * ratio))
         self.horizontalFrame.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.horizontalFrame.setObjectName("horizontalFrame")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.horizontalFrame)
@@ -1876,7 +1877,7 @@ class OutboundFriendRequest(QtWidgets.QWidget):
         self.spacer.setFixedWidth(0)
         self.horizontalLayout_4.addWidget(self.spacer)
         self.label = QtWidgets.QLabel(self.horizontalFrame)
-        self.label.setFixedSize(40, 40)
+        self.label.setFixedSize(40 * ratio, 40 * ratio)
         self.label.setStyleSheet(f"border-image: url({forward_data_dir}icon{self.reciever_id}.png);")
         self.label.setText("")
         self.label.setObjectName("label")
@@ -1893,10 +1894,10 @@ class OutboundFriendRequest(QtWidgets.QWidget):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
         self.label_2.setSizePolicy(sizePolicy)
-        self.label_2.setFixedHeight(28)
+        self.label_2.setFixedHeight(28 * ratio)
         font = QtGui.QFont()
         font.setFamily("Segoe UI Semilight")
-        font.setPointSize(10)
+        font.setPointSize(10 * ratio)
         self.label_2.setFont(font)
         self.label_2.setStyleSheet("color: white;")
         self.label_2.setText(self.request['target']['display_name'])
@@ -1905,6 +1906,7 @@ class OutboundFriendRequest(QtWidgets.QWidget):
         self.label_3 = QtWidgets.QLabel(self.verticalFrame)
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
+        font.setPointSize(8 * ratio)
         self.label_3.setFont(font)
         self.label_3.setStyleSheet("color: rgb(200, 200, 200);")
         self.label_3.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
@@ -1913,9 +1915,9 @@ class OutboundFriendRequest(QtWidgets.QWidget):
         self.verticalLayout.addWidget(self.label_3)
         self.horizontalLayout_4.addWidget(self.verticalFrame)
         self.horizontalFrame_2 = QtWidgets.QFrame(self.horizontalFrame)
-        self.horizontalFrame_2.setMaximumSize(QtCore.QSize(120, 16777215))
+        self.horizontalFrame_2.setMaximumSize(QtCore.QSize(120 * ratio, 16777215))
         self.horizontalFrame_2.setStyleSheet("QPushButton {\n"
-                                             "    border-radius: 17px;\n"
+                                             f"    border-radius: {17 * ratio}px;\n"
                                              "    background-color: rgb(33, 37, 43);\n"
                                              "}\n"
                                              "\n"
@@ -1928,12 +1930,12 @@ class OutboundFriendRequest(QtWidgets.QWidget):
                                              "}")
         self.horizontalFrame_2.setObjectName("horizontalFrame_2")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalFrame_2)
-        self.horizontalLayout_2.setContentsMargins(14, 0, 14, 0)
-        self.horizontalLayout_2.setSpacing(23)
+        self.horizontalLayout_2.setContentsMargins(14 * ratio, 0, 14 * ratio, 0)
+        self.horizontalLayout_2.setSpacing(23 * ratio)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.pushButton = QtWidgets.QPushButton(self.horizontalFrame_2)
-        self.pushButton.setMinimumSize(QtCore.QSize(35, 35))
-        self.pushButton.setMaximumSize(QtCore.QSize(35, 35))
+        self.pushButton.setMinimumSize(QtCore.QSize(35 * ratio, 35 * ratio))
+        self.pushButton.setMaximumSize(QtCore.QSize(35 * ratio, 35 * ratio))
         self.pushButton.setStyleSheet(
             f"background-image: url({forward_data_dir}icons/20x20/cil-x{scaled}.png);\n"
             "background-position: center;\n"
@@ -1944,10 +1946,7 @@ class OutboundFriendRequest(QtWidgets.QWidget):
         self.horizontalLayout_4.addWidget(self.horizontalFrame_2)
         self.verticalLayout_2.addWidget(self.horizontalFrame)
         self.pushButton.clicked.connect(self.decline)
-        self.setFixedHeight(50)
-
-    def callback(self):
-        Thread(target=lambda: os.remove(f'{data_dir}icon{self.request["sender"]["id"]}.png')).start()
+        self.setFixedHeight(50 * ratio)
 
     def decline(self):
 
@@ -1956,9 +1955,10 @@ class OutboundFriendRequest(QtWidgets.QWidget):
                 self.hide()
             except RuntimeError:
                 pass
-            self.callback()
 
         def failure():
+            if sip.isdeleted(mainui):
+                return
             mainui.show_snack_bar(SnackBar('An unexpected error occured while the friend request was being canceled, '
                                            'please try again.', False, True))
 
@@ -3204,7 +3204,7 @@ class AdvancedUserStatus(QtWidgets.QWidget):
                         dominant, dark, text = extract_color(spotifysong.albumimagelink)
                         return dominant, text, dark
 
-                    runnable = Runnable(run)
+                    runnable = Runnable(run, parent=mainui)
                     runnable.callback.connect(listen)
                     runnable.start()
 
@@ -3861,7 +3861,8 @@ class ListeningToFriends(QtWidgets.QWidget):
         ratio = get_ratio()
         scaled = ''
         if ratio != 1:
-            icons = ['20x20\\cil-loop-circular', '20x20\\cil-media-play', '20x20\\cil-media-stop']
+            icons = ['20x20\\cil-loop-circular', '20x20\\cil-media-play', '20x20\\cil-media-stop',
+                     '20x20\\cil-media-pause']
             scale_images(icons, ratio)
             scaled = 'scaled'
         self.verticalFrame.setObjectName("verticalFrame")
