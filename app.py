@@ -1390,9 +1390,8 @@ class MainUI(UiMainWindow):
 
     @staticmethod
     def delayed_text(text, first, second, interval=5):
-        text.setText(first)
-        time.sleep(interval)
-        text.setText(second)
+        QtCore.QTimer.singleShot(0, lambda: text.setText(first))
+        QtCore.QTimer.singleShot(interval * 1000, lambda: text.setText(second))
 
     def eventFilter(self, watched, event):
         if not self.isInitialized:
