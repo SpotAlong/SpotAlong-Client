@@ -1117,13 +1117,24 @@ class MainUI(UiMainWindow):
             else:
                 self.label_20.setText('Loading...')
                 self.pushButton_7.setDisabled(True)
+
+                def success():
+                    self.lineEdit.setText('')
+                    self.delayed_text(self.label_20, 'Success!', '')
+                    self.pushButton_7.setDisabled(False)
+
+                def failure():
+                    self.delayed_text(self.label_20, 'Invalid friend code.', '')
+                    self.pushButton_7.setDisabled(False)
+
+                success_runner = Runnable(parent=self)
+                success_runner.callback.connect(success)
+                failure_runner = Runnable(parent=self)
+                failure_runner.callback.connect(failure)
+
                 Thread(target=client.invoke_request,
-                       args=(BASE_URL + '/friends/friend_request', {'target_id': text}, 'POST',
-                             lambda: (self.lineEdit.setText(''), self.delayed_text(self.label_20, 'Success!', ''),
-                                      self.pushButton_7.setDisabled(False)),
-                             lambda: (self.delayed_text(self.label_20, 'Invalid friend code.', ''),
-                                      self.pushButton_7.setDisabled(False))))\
-                    .start()
+                       args=(BASE_URL + '/friends/friend_request', {'target_id': text}, 'POST', success_runner.run,
+                             failure_runner.run)).start()
 
         self.pushButton_7.clicked.connect(friend_code_validator)
 
