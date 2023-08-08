@@ -3384,7 +3384,10 @@ class ListedFriendStatus(QtWidgets.QWidget):
         self.label_2.setObjectName("label_2")
         self.horizontalLayout.addWidget(self.label_2)
         self.verticalLayout.addWidget(self.horizontalFrame)
-        self.label_2.setText(self.spotifysong.clientusername)
+
+    def showEvent(self, a0):
+        self.label_2.setText(limit_text_smart(self.spotifysong.clientusername, self.label_2))
+        return QtWidgets.QWidget.showEvent(self, a0)
 
 
 @adjust_sizing()
