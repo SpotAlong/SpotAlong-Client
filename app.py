@@ -41,6 +41,7 @@ from shutil import copyfile
 import keyring
 import requests
 import pyperclip
+from PyQt5 import sip
 from PyQt5 import QtCore, QtGui, QtWidgets
 from appdirs import user_data_dir
 from PIL import Image, ImageOps
@@ -619,6 +620,8 @@ class MainUI(UiMainWindow):
 
             def failure():
                 self.failure_combo_box_changed = time.time()
+                if sip.isdeleted(self):
+                    return
                 self.comboBox.setCurrentIndex(0 if i == 1 else 1)
                 self.show_snack_bar(SnackBar('An error occured while changing the listening status setting.',
                                              True, True))

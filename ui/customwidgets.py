@@ -3170,8 +3170,14 @@ class AdvancedUserStatus(QtWidgets.QWidget):
                             mainui.show_snack_bar(SnackBar('There was an error trying to play the song in Spotify, '
                                                            'attempting to open Spotify', True))
                     else:
-                        mainui.show_snack_bar(SnackBar('No Spotify session detected; attempting to open Spotify.'))
-                    os.startfile(f'spotify:track:{spotifysong.songid}')
+                        try:
+                            os.startfile(f'spotify:track:{spotifysong.songid}')
+                            mainui.show_snack_bar(SnackBar('No Spotify session detected, opening Spotify...'))
+                        except (FileNotFoundError, Exception) as exc:
+                            mainui.show_snack_bara(SnackBar('Could not find Spotify. Either install Spotify or start '
+                                                            'playing music in Spotify.', False, True))
+                            if not isinstance(exc, FileNotFoundError):
+                                logger.error('Unexpected error occured while trying to open Spotify: ', exc_info=exc)
 
                 self.pushButton.clicked.connect(play_song)
 
