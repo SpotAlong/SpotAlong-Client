@@ -867,27 +867,31 @@ class MainUI(UiMainWindow):
                 self.verticalLayout_18.insertWidget(1, request)
                 self.inboundfriendrequests.update({data.request_id: request})
                 if self.verticalStackedWidget.currentWidget() != self.page_2:
-                    self.pushButton_11.setStyleSheet(adj_style(ratio, '''QPushButton {
-                                                            background-image: url(%s.png);
-                                                            background-position: left;
-                                                            background-repeat: no-repeat;
-                                                            border: none;
-                                                            border-left: 20px solid rgb(27, 29, 35);
-                                                            border-right: 5px solid rgb(44, 49, 60);
-                                                            background-color: rgb(27, 29, 35);
-                                                            text-align: left;
-                                                            padding-left: 45px;
-                                                        }
-                                                        QPushButton:hover {
-                                                            background-color: rgb(33, 37, 43);
-                                                            border-left: 20px solid rgb(33, 37, 43);
-                                                        }
-                                                        QPushButton:pressed {
-                                                            background-color: rgb%s;
-                                                            border-left: 20px solid rgb%s;
-                                                        }''') % (forward_data_dir +
-                                                                 f'icons/20x20/cil-user-follow-notif{self.scaled}',
-                                                                 repr(self.accent_color), repr(self.accent_color)))
+                    col = 'transparent'
+                else:
+                    col = 'rgb(44, 49, 60)'
+                self.pushButton_11.setStyleSheet(adj_style(ratio, '''QPushButton {
+                                                        background-image: url(%s.png);
+                                                        background-position: left;
+                                                        background-repeat: no-repeat;
+                                                        border: none;
+                                                        border-left: 20px solid rgb(27, 29, 35);
+                                                        border-right: 5px solid %s;
+                                                        background-color: rgb(27, 29, 35);
+                                                        text-align: left;
+                                                        padding-left: 45px;
+                                                    }
+                                                    QPushButton:hover {
+                                                        background-color: rgb(33, 37, 43);
+                                                        border-left: 20px solid rgb(33, 37, 43);
+                                                    }
+                                                    QPushButton:pressed {
+                                                        background-color: rgb%s;
+                                                        border-left: 20px solid rgb%s;
+                                                    }''') % (forward_data_dir +
+                                                             f'icons/20x20/cil-user-follow-notif{self.scaled}',
+                                                             col,
+                                                             repr(self.accent_color), repr(self.accent_color)))
 
             else:
                 request = data
