@@ -1018,7 +1018,8 @@ class MainUI(UiMainWindow):
         ))
 
         def clear_album_cache():
-            [file.unlink() for file in Path(data_dir).glob("*album*") if file.is_file()]
+            dont_del = ['unknown_album.png', 'albumNone.png', 'partialalbumNone.png']
+            [file.unlink() for file in Path(data_dir).glob("*album*") if file.is_file() and file.name not in dont_del]
             self.label_26.setText('Cleared!')
             Thread(target=lambda: (time.sleep(1), self.label_26.setText(''))).start()
 
