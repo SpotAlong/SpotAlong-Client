@@ -593,6 +593,8 @@ class MainUI(UiMainWindow):
                     advstatuswidget.timer.stop()
             for historywidget in self.laststatuses.values():
                 historywidget.timer.stop()
+            if self.listentofriends.spotifylistener:
+                self.listentofriends.spotifylistener.end(no_log=True)
             self.client.disconnected = True
             self.client.client.disconnect()
             if self.client.spotifyplayer:
