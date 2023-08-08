@@ -3186,6 +3186,8 @@ class AdvancedUserStatus(QtWidgets.QWidget):
                 self.pushButton.clicked.connect(play_song)
 
                 def listen(colors):
+                    if mainui.listentofriends.spotifylistener:
+                        mainui.listentofriends.spotifylistener.end(no_log=True)
                     mainui.partiallisteningtofriends = PartialListeningToFriends(True, spotifysong.client_id,
                                                                                  mainui.spotifylistener, spotifysong,
                                                                                  colors[0], colors[1], colors[2])
@@ -4123,7 +4125,7 @@ class ListeningToFriends(QtWidgets.QWidget):
                                         "}")
 
         def stop():
-            spotifylistener.running = False
+            spotifylistener.end(no_log=True)
             self.timer.stop()
             self.hide()
             new = ListeningToFriends()
