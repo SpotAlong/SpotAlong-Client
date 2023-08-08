@@ -2921,6 +2921,10 @@ class AdvancedUserStatus(QtWidgets.QWidget):
         self.verticalFrame = QtWidgets.QFrame(self)
         self.verticalFrame.setObjectName("verticalFrame")
         color = "rgba(0, 0, 0, 50)" if np.mean(text_color) > np.mean(dominant_color) else "rgba(255, 255, 255, 50)"
+        if np.mean([abs(dominant_color[i] - text_color[i]) for i in range(3)]) > 60:
+            color = 'rgba(0, 0, 0, 50)'
+        if np.mean(dominant_color) > 180:
+            color = 'rgba(255, 255, 255, 50)'
         self.verticalFrame.setStyleSheet("#verticalFrame {\n"
                                          f"background: {color};\n"
                                          f"border-radius: 30px;\n"
@@ -3174,8 +3178,8 @@ class AdvancedUserStatus(QtWidgets.QWidget):
                             os.startfile(f'spotify:track:{spotifysong.songid}')
                             mainui.show_snack_bar(SnackBar('No Spotify session detected, opening Spotify...'))
                         except (FileNotFoundError, Exception) as exc:
-                            mainui.show_snack_bara(SnackBar('Could not find Spotify. Either install Spotify or start '
-                                                            'playing music in Spotify.', False, True))
+                            mainui.show_snack_bar(SnackBar('Could not find Spotify. Either install Spotify or start '
+                                                           'playing music in Spotify.', False, True))
                             if not isinstance(exc, FileNotFoundError):
                                 logger.error('Unexpected error occured while trying to open Spotify: ', exc_info=exc)
 
@@ -3203,6 +3207,10 @@ class AdvancedUserStatus(QtWidgets.QWidget):
                     if self.spotifysong.client_id in mainui.client.listening_friends:
                         mainui.show_snack_bar(SnackBar('You cannot listen to someone who is already listening to you.'))
                         return
+                    if mainui.listentofriends and (sp_listener := mainui.listentofriends.spotifylistener):
+                        if sp_listener.running and sp_listener.friend_id == spotifysong.client_id:
+                            mainui.pushButton_18.click()
+                            return
 
                     mainui.client.client.emit('start_listening', self.spotifysong.client_id, '/api/authorization')
 
@@ -3863,6 +3871,10 @@ class ListeningToFriends(QtWidgets.QWidget):
         self.verticalFrame = QtWidgets.QFrame(self)
         self.verticalFrame.setFixedSize(QtCore.QSize(760, 400))
         color = "rgba(0, 0, 0, 50)" if np.mean(text_color) > np.mean(dominant_color) else "rgba(255, 255, 255, 50)"
+        if np.mean([abs(dominant_color[i] - text_color[i]) for i in range(3)]) > 60:
+            color = 'rgba(0, 0, 0, 50)'
+        if np.mean(dominant_color) > 180:
+            color = 'rgba(255, 255, 255, 50)'
         self.verticalFrame.setStyleSheet("#verticalFrame {\n"
                                          f"    background-color: {color};\n"
                                          "    border-radius: 30px;\n"

@@ -85,7 +85,7 @@ def refresh(access_token, refresh_token):
         Helper function that will attempt to refresh an access token, and return False if unsuccessful.
     """
     refresh_url = BASE_URL + '/login/refresh'
-    requests.get(REGULAR_BASE)
+    logger.info('Refreshing token...')
     try:
         refresh_resp = requests.post(refresh_url, headers={'authorization': access_token},
                                      data={'refresh_token': refresh_token}, timeout=15)
@@ -93,10 +93,13 @@ def refresh(access_token, refresh_token):
         logger.error('Could not connect to the server', exc_info=e)
         return False
     if refresh_resp.status_code != 200:
+        try:
+            logger.error(f'Recieved non-200 status code when refreshing the token: {refresh_resp.json()}')
+        except json.JSONDecodeError:
+            logger.error(f'Recieved non-200 status code when refreshing the token: {refresh_resp.status_code}')
         return False
     else:
         response = refresh_resp.json()
-        response.update({'timeout': convert_from_utc_timestamp(response['timeout'])})
         token_dict = {'access_token': response['token'], 'refresh_token': response['refresh_token'],
                       'timeout': response['timeout']}
         keyring.set_password('SpotAlong', 'auth_token', json.dumps(token_dict))
@@ -119,7 +122,7 @@ def create_user(emitter):
         emitter.append(['Failed', 'Failed'])  # ?
         return False
     if login_response.status_code == 200:
-        timestamp = convert_from_utc_timestamp(login_response.json()['expiry_timestamp'])
+        timestamp = login_response.json()['expiry_timestamp']
         auth_url = login_response.json()['auth_url']
         emitter.append((auth_url, timestamp))
         return auth_url, timestamp
@@ -139,7 +142,6 @@ def redeem_code(code):
         return 'Failed'
     if redeem_response.status_code == 200:
         response = redeem_response.json()
-        response.update({'timeout': convert_from_utc_timestamp(response['timeout'])})
         token_dict = {'access_token': response['access_token'], 'refresh_token': response['refresh_token'],
                       'timeout': response['timeout']}
         keyring.set_password('SpotAlong', 'auth_token', json.dumps(token_dict))
