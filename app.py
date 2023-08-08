@@ -64,8 +64,8 @@ forward_data_dir = data_dir.replace('\\', '/')
 level = logging.INFO
 if {'-d', '-v', '--debug', '--verbose'} & set(sys.argv):
     level = logging.DEBUG
-formatter = logging.Formatter('%(asctime)s - %(levelname)-8s - %(name)-14s - %(message)s')
-logging.basicConfig(level=level, format='%(asctime)s - %(levelname)-8s - %(name)-14s - %(message)s')
+formatter = logging.Formatter('%(asctime)s - %(levelname)-8s - %(name)-29s - %(message)s')
+logging.basicConfig(level=level, format='%(asctime)s - %(levelname)-8s - %(name)-29s - %(message)s')
 os.makedirs(data_dir, exist_ok=True)
 filehandler = logging.FileHandler(f'{data_dir}spotalong.log', 'w', 'utf-8')
 filehandler.setFormatter(formatter)
