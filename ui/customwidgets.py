@@ -2920,7 +2920,7 @@ class AdvancedUserStatus(QtWidgets.QWidget):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.verticalFrame = QtWidgets.QFrame(self)
         self.verticalFrame.setObjectName("verticalFrame")
-        color = "rgba(0, 0, 0, 50)" if np.mean(dominant_color) < 170 else "rgba(255, 255, 255, 50)"
+        color = "rgba(0, 0, 0, 50)" if np.mean(text_color) > np.mean(dominant_color) else "rgba(255, 255, 255, 50)"
         self.verticalFrame.setStyleSheet("#verticalFrame {\n"
                                          f"background: {color};\n"
                                          f"border-radius: 30px;\n"
@@ -3853,7 +3853,7 @@ class ListeningToFriends(QtWidgets.QWidget):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.verticalFrame = QtWidgets.QFrame(self)
         self.verticalFrame.setFixedSize(QtCore.QSize(760, 400))
-        color = "rgba(0, 0, 0, 50)" if np.mean(dominant_color) < 170 else "rgba(255, 255, 255, 50)"
+        color = "rgba(0, 0, 0, 50)" if np.mean(text_color) > np.mean(dominant_color) else "rgba(255, 255, 255, 50)"
         self.verticalFrame.setStyleSheet("#verticalFrame {\n"
                                          f"    background-color: {color};\n"
                                          "    border-radius: 30px;\n"
