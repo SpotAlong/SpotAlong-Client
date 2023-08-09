@@ -83,6 +83,7 @@ class MainClient:
         self.listening_friends = []
         self._next_in_queue = ''
         self._last_time_of_state = time.time()
+        self._is_refreshing = False  # don't try to refresh the token twice simultaneously
         with open(data_dir + 'color_cache.json', 'r') as fp:
             self.album_cache = json.load(fp)
         with open(data_dir + 'profile_cache.json', 'r') as fp:
@@ -436,9 +437,13 @@ class MainClient:
     def invoke_request(self, url, data, request_type='GET', callback=lambda _=None: None, failed=lambda: None,
                        timeout=5):
         try:
+            while self._is_refreshing:
+                time.sleep(0.1)
             if request_type in ['GET', 'POST', 'DELETE']:
                 if time.time() > self._timeout:
+                    self._is_refreshing = True
                     refresh_resp = refresh(self._access_token, self._refresh_token)
+                    self._is_refreshing = False
                     if refresh_resp:
                         self._access_token, self._refresh_token, self._timeout = refresh_resp
                     else:
@@ -451,7 +456,11 @@ class MainClient:
                     resp = requests.get(BASE_URL + '/login/eligible', headers={'authorization': self._access_token},
                                         timeout=timeout)
                     if resp.status_code == 401 and resp.json()['reason'] == 'Timed out.':
+                        while self._is_refreshing:
+                            time.sleep(0.1)
+                        self._is_refreshing = True
                         refresh_resp = refresh(self._access_token, self._refresh_token)
+                        self._is_refreshing = False
                         if refresh_resp:
                             self._access_token, self._refresh_token, self._timeout = refresh_resp
                         else:

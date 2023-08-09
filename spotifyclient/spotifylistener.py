@@ -87,7 +87,7 @@ class SpotifyListener:
                     time.sleep(2)
 
                 if self.spotifyplayer.disconnected:
-                    time.sleep(5)
+                    time.sleep(7)
                     if self.spotifyplayer.disconnected:
                         self.end('the SpotifyPlayer was disconnected, please try again later')
                         return
