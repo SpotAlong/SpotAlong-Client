@@ -40,6 +40,7 @@ from threading import Thread
 from shutil import copyfile
 
 import keyring
+import keyring.errors
 import requests
 import pyperclip
 from PyQt5 import sip
@@ -577,7 +578,11 @@ class MainUI(UiMainWindow):
         self.disconnect_overlay = DisconnectBanner(parent=self)
 
         def log_out():
-            keyring.set_password('SpotAlong', 'auth_token', '')
+            try:
+                keyring.delete_password('SpotAlong', 'auth_token')
+                keyring.delete_password('SpotAlong', 'cookie')
+            except keyring.errors.PasswordDeleteError:
+                pass
             logging.info(f'Logging out as user {client.spotifyclient.clientUsername}')
             stop_all()
 
