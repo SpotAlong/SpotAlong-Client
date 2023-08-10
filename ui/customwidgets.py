@@ -4242,7 +4242,7 @@ class ListeningToFriends(QtWidgets.QWidget):
     def update_listening_time(self):
         if not mainui.client.friendstatus.get(self.spotifylistener.friend_id) or sip.isdeleted(self.label_0):
             return
-        delta = datetime.datetime.utcnow().timestamp() - self.spotifylistener.begin_listening_time
+        delta = time.time() - self.spotifylistener.begin_listening_time
         minutes = int(delta // 60)
         seconds = int(delta % 60)
         listening_str = f'{minutes}m {seconds}s'
@@ -4797,13 +4797,26 @@ class FriendUpdateThread(QtCore.QThread):
         for friend_id in mainui.client.listening_friends:
             if friend_id not in mainui.client.friends:
                 try:
-                    mainui.client.listening_friends.remove(friend_id)
+                    mainui.client.listening_friends.pop(mainui.client.listening_friends.index(friend_id))
+                    mainui.client.listening_friends_time.pop(friend_id)
                 except ValueError:
                     pass
-        listen_along_friends = [mainui.client.friends[id_].clientUsername for id_ in mainui.client.listening_friends]
+
+        listen_along_friends = []
+        listen_along_time_text = []
+        for id_ in mainui.client.listening_friends:
+            listen_along_friends.append(mainui.client.friends[id_].clientUsername)
+
+            def _to_str(delta):
+                return f'{int(delta // 60)}m {int(delta % 60)}s'
+
+            listen_along_time_text.append(_to_str(time.time() - mainui.client.listening_friends_time[id_]))
+
         listen_along_text = ', '.join(listen_along_friends) + ' listening along'
+        listen_along_time_text = '(' + ', '.join(listen_along_time_text) + ')'
         if mainui.client.listening_friends:
-            parsed_text = f'<br><span style="color: rgb(252, 161, 40)">‎  {listen_along_text}  </span>'
+            parsed_text = f'<br><span style="color: rgb(252, 161, 40)">‎  {listen_along_text}  </span>' \
+                          f'<br><span style="color: rgb(252, 161, 40)">‎  {listen_along_time_text}  </span>'
         else:
             parsed_text = ''
         self.ui.label_3.setText(

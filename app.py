@@ -17,6 +17,7 @@ __copyright__ = 'Copyright (C) 2020-Present CriticalElement'
 __version__ = '1.0.0'
 
 
+import datetime
 import io
 import gc
 import json
@@ -340,7 +341,13 @@ class MainUI(UiMainWindow):
 
         def sort_friend_history():
             historywidgets = self.laststatuses.values()
-            historywidgets = sorted(historywidgets, key=lambda wi: wi.last_timestamp.timestamp(), reverse=True)
+
+            def sort_widgets(wi):
+                if wi.label_2.text() == 'Now ':
+                    return datetime.datetime.now().timestamp()
+                return wi.last_timestamp.timestamp()
+
+            historywidgets = sorted(historywidgets, key=sort_widgets, reverse=True)
             historyindexes = self.laststatuses.values()
             for index in historyindexes:
                 self.verticalLayout_16.removeWidget(index)
@@ -359,11 +366,13 @@ class MainUI(UiMainWindow):
             f'<span style="color:rgb(33, 92, 255)">{online_friends} online • </span>' 
             f'<span style="color:rgb(125, 125, 125)">{offline_friends} offline  </span>')
         self.label_3.setTextFormat(QtCore.Qt.RichText)
+        self.label_3.setMaximumHeight(16777215)
+        self.label_3.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred,
+                                                         QtWidgets.QSizePolicy.MinimumExpanding))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(20)
         self.label_3.setFont(font)
-        self.label_3.setFixedHeight(100)
         self.label_3.setWordWrap(True)
         progress_bar.setValue(80)
 
@@ -585,6 +594,7 @@ class MainUI(UiMainWindow):
             self.worker3.running = False
             self.worker4.exit(0)
             self.worker4.running = False
+            self.timer.stop()
             if hasattr(self, 'playbackcontroller') and hasattr(self.playbackcontroller, 'timer3'):
                 self.playbackcontroller.timer2.stop()
                 self.playbackcontroller.timer3.stop()
@@ -865,6 +875,9 @@ class MainUI(UiMainWindow):
 
         self.worker2.emitter.connect(friendemitter)
         self.worker2.start()
+        self.timer = QtCore.QTimer()
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.worker2.update_friend_statuses)
 
         def inboundrequestemmitter(data):
             if isinstance(data, PartialInboundFriendRequest):
@@ -1287,6 +1300,7 @@ class MainUI(UiMainWindow):
                                                          **self.threadsafe_snackbar_runner.kwargs)))
         if self.client.mainstatus.playing_status == 'Listening':
             QtCore.QTimer.singleShot(5000, lambda: Thread(target=self.client.send_queue_for_caching).start())
+        self.timer.start()
         logging.info(f'Start Time: {time.perf_counter() - getattr(QtCore, "start_time")}')
 
     def change_accent_color(self, color: tuple):

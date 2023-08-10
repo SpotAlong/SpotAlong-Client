@@ -81,6 +81,7 @@ class MainClient:
         self._timeout = timeout
         self.ui = None
         self.listening_friends = []
+        self.listening_friends_time = {}
         self._next_in_queue = ''
         self._last_time_of_state = time.time()
         self._is_refreshing = False  # don't try to refresh the token twice simultaneously
@@ -143,6 +144,7 @@ class MainClient:
             self.disconnected = True
             self.client.disconnect()
             self.listening_friends = []
+            self.listening_friends_time = {}
             QtCore.QTimer.singleShot(0, self.ui.worker2.update_friend_statuses)
             if self.ui.active_dialog:
                 if self.ui.active_dialog.error and "playback controller" in self.ui.active_dialog.label_2.text():
@@ -327,14 +329,20 @@ class MainClient:
         def start_listening(data):
             if data not in self.listening_friends:
                 self.listening_friends.append(data)
+                if len(self.listening_friends) == 1:
+                    QtCore.QTimer.singleShot(0, self.ui.timer.start)
+                self.listening_friends_time[data] = time.time()
                 QtCore.QTimer.singleShot(0, self.ui.worker2.update_friend_statuses)
                 self.send_next_for_listening(force=True)
 
         def end_listening(data):
             try:
                 self.listening_friends.pop(self.listening_friends.index(data))
+                self.listening_friends_time.pop(data)
             except ValueError:
                 pass
+            if len(self.listening_friends) == 0:
+                QtCore.QTimer.singleShot(0, self.ui.timer.stop)
             QtCore.QTimer.singleShot(0, self.ui.worker2.update_friend_statuses)
 
         def add_to_queue(data):

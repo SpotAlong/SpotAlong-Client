@@ -18,7 +18,6 @@ Copyright (C) 2020-Present CriticalElement
 
 import time
 import logging
-from datetime import datetime
 from threading import Thread
 
 from appdirs import user_data_dir
@@ -45,7 +44,7 @@ class SpotifyListener:
         self.handling = False
         self.external_handle = 0
         self.last_sync = time.time()
-        self.begin_listening_time = datetime.utcnow().timestamp()
+        self.begin_listening_time = time.time()
         self.play_song(client.friendstatus[friend_id])
 
     def play_song(self, song: SpotifySong):
