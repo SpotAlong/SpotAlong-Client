@@ -893,6 +893,12 @@ class MainUI(UiMainWindow):
                     col = 'transparent'
                 else:
                     col = 'rgb(44, 49, 60)'
+                text = f'{request.sender["display_name"]} sent you a friend request.'
+                if self.isActiveWindow():
+                    self.show_snack_bar(SnackBar(text))
+                else:
+                    qapp = QtCore.QCoreApplication.instance()
+                    qapp.tray.showMessage('Friend Request', text, QtGui.QIcon(data_dir + 'logo.ico'), 5000)
                 self.pushButton_11.setStyleSheet(adj_style(ratio, '''QPushButton {
                                                         background-image: url(%s.png);
                                                         background-position: left;
@@ -1552,6 +1558,7 @@ if __name__ == '__main__':
     starting = {}
 
     tray = QtWidgets.QSystemTrayIcon()
+    app.tray = tray
     tray.setIcon(QtGui.QIcon(data_dir + 'logo.ico'))
     tray.setVisible(True)
     tray.setToolTip('SpotAlong')
