@@ -739,7 +739,7 @@ class MainUI(UiMainWindow):
                 self.listentofriends = listener
             else:
                 playbackcontroller = data.convert_to_widget()
-                if self.playbackcontroller.is_player:
+                if hasattr(self.playbackcontroller, 'is_player') and self.playbackcontroller.is_player:
                     try:
                         self.playbackcontroller.timer3.stop()
                         self.playbackcontroller.timer2.stop()

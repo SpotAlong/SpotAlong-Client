@@ -298,6 +298,7 @@ class MainClient:
                 if data['ex_data']['id'] == self.id:
                     cache_profile(data['ex_data'])
                     self.spotifyclient.user_data = data
+                    self.spotifyclient.user_data['status'] = data['ex_data']['status']
                     self.spotifyclient.user_update()
                 else:
                     cache_profile(data['ex_data'])

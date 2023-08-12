@@ -4690,10 +4690,7 @@ class MainUpdateThread(QtCore.QThread):
                         self.oldname != self.client.mainstatus.clientusername or \
                         self.oldsongid != self.client.mainstatus.songid:
 
-                    if self.client.mainstatus.playing_type not in ('None', 'ad', 'episode'):
-                        status = self.client.mainstatus.playing_status.lower()
-                    else:
-                        status = 'online' if self.client.mainstatus.playing_status == 'Online' else 'offline'
+                    status = self.client.mainstatus.playing_status.lower()
                     self.oldsongname = self.client.mainstatus.songname
                     if update_reason == 'pfp':
                         self.oldpfp = self.client.mainstatus.clientavatar
@@ -4745,10 +4742,7 @@ class FriendUpdateThread(QtCore.QThread):
             try:
                 for id_, friend in self.client.friendstatus.items():
                     if id_ not in self.statuswidgets.copy():
-                        if friend.playing_type not in ('None', 'ad', 'episode'):
-                            status = friend.playing_status.lower()
-                        else:
-                            status = 'online' if friend.playing_status == 'Online' else 'offline'
+                        status = friend.playing_status.lower()
                         statuswidget = PartialStatusWidget(status, friend.clientavatar, friend.client_id,
                                                            friend.clientusername, friend, id_, self.ui.accent_color)
                         listedstatuswidget = PartialListedFriendStatus(friend, status)
