@@ -119,7 +119,10 @@ def extract_color(url):
 
     def check_closeness(dominant, text):
         # returns True if the difference in rgb values is less than or equal to 20 for at least two color channels
-        return sum([int(abs(dominant[col] - text[col]) <= 20) for col in range(3)]) >= 2
+        if sum([int(abs(dominant[col] - text[col]) <= 20) for col in range(3)]) >= 2:
+            # checks that the other color channel is similar by 75
+            return max([abs(dominant[col] - text[col]) for col in range(3)]) < 75
+        return False
 
     if check_closeness(dominant_color, text_color):
         text_color = old_colors[all_averages.index(max(all_averages))]
@@ -201,13 +204,15 @@ def download_album(url):
                     return
                 album_url = f'{BASE_URL}/cache/album/{id_}'
                 start = time.perf_counter()
-                img_data = requests.get(album_url, timeout=5).content
+                req = requests.get(album_url, timeout=5)
+                assert req.ok
+                img_data = req.content
                 with open(data_dir + f'album{id_}.png', 'wb') as f:
                     f.write(img_data)
                     logger.info(f'Downloaded feathered image {id_}')
                     logger.info(time.perf_counter() - start)
                 Thread(target=clean_album_image_cache, args=(url,)).start()
-            except requests.exceptions.ConnectionError:
+            except (requests.exceptions.ConnectionError, AssertionError):
                 logger.warning(f'Downloading of feathered image {id_} failed, feathering locally')
                 return
     else:
