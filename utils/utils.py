@@ -68,7 +68,9 @@ def extract_color(url):
             album_url = f'{BASE_URL}/cache/colors/{album_id}'
             resp = requests.get(album_url)
             assert resp.ok
-            colors_cache = {album_id: resp.json()}
+            colors_cache.update({album_id: resp.json()})
+            with open(data_dir + 'color_cache.json', 'w') as imagefile:
+                json.dump(colors_cache, imagefile, indent=4)
         except (Exception, AssertionError):
             logger.warning('SpotAlong server cache failed, extracting color manually...')
     if album_id in colors_cache:
