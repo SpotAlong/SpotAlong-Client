@@ -3187,7 +3187,11 @@ class AdvancedUserStatus(QtWidgets.QWidget):
 
                 def listen(colors):
                     if mainui.listentofriends.spotifylistener:
-                        mainui.listentofriends.spotifylistener.end(no_log=True)
+                        try:
+                            mainui.listentofriends.spotifylistener.end(no_log=True)
+                        except Exception as _exc:
+                            logger.error('Unexpected error occured while ending previous listening session: ',
+                                         exc_info=_exc)
                     mainui.partiallisteningtofriends = PartialListeningToFriends(True, spotifysong.client_id,
                                                                                  mainui.spotifylistener, spotifysong,
                                                                                  colors[0], colors[1], colors[2])
@@ -4130,7 +4134,10 @@ class ListeningToFriends(QtWidgets.QWidget):
                                         "}")
 
         def stop():
-            spotifylistener.end(no_log=True)
+            try:
+                spotifylistener.end(no_log=True)
+            except Exception as _exc:
+                logger.error('An error occured while trying to end the listen along session: ', exc_info=_exc)
             self.timer.stop()
             self.hide()
             new = ListeningToFriends()
