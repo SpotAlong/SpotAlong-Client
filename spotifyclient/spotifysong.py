@@ -22,7 +22,7 @@ import datetime
 
 class SpotifySong:
     def __init__(self,
-                 songname: typing.Optional[str] = None,
+                 songname: typing.Optional[str] = '',
                  songid: typing.Optional[str] = None,
                  songlink: typing.Optional[str] = None,
                  contexttype: typing.Optional[str] = None,
@@ -30,7 +30,7 @@ class SpotifySong:
                  contexturl: typing.Optional[str] = None,
                  progress: typing.Optional[float] = None,
                  duration: typing.Optional[int] = None,
-                 albumname: typing.Optional[str] = None,
+                 albumname: typing.Optional[str] = '',
                  albumlink: typing.Optional[str] = None,
                  albumimagelink: typing.Optional[str] = None,
                  song_authors_urls: typing.Optional[list] = None,
