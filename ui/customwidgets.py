@@ -4423,7 +4423,7 @@ class DisconnectBanner(QtWidgets.QWidget):
         self.label.setMinimumSize(QtCore.QSize(0, 150))
         self.label.setMaximumSize(QtCore.QSize(16777215, 150))
         self.label.setText("")
-        self.label.setStyleSheet(f'border-image: url({forward_data_dir}logo.png) 0 0 0 0 stretch stretch;')
+        self.label.setStyleSheet(f'border-image: url({forward_data_dir}logo.ico) 0 0 0 0 stretch stretch;')
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
         self.label_2 = QtWidgets.QLabel(self.verticalFrame)
