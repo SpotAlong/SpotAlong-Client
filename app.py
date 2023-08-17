@@ -609,7 +609,12 @@ class MainUI(UiMainWindow):
             for historywidget in self.laststatuses.values():
                 historywidget.timer.stop()
             if self.listentofriends.spotifylistener:
-                self.listentofriends.spotifylistener.end(no_log=True)
+                try:
+                    self.listentofriends.spotifylistener.end(no_log=True)
+                except Exception as _exc:
+                    logging.warning('An unexpected error occured while trying to end the listening along session: ',
+                                    exc_info=_exc)
+                    pass  # probably some network error that doesn't matter
             self.client.disconnected = True
             self.client.client.disconnect()
             if self.client.spotifyplayer:
