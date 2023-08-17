@@ -21,6 +21,7 @@ import logging
 from threading import Thread
 
 from appdirs import user_data_dir
+from socketio.exceptions import SocketIOError
 
 from spotifyclient.spotifyplayer import SpotifyPlayer  # noqa
 from spotifyclient.spotifysong import SpotifySong  # noqa
@@ -152,7 +153,9 @@ class SpotifyListener:
                         if not self.running:
                             self.end()
                             return
-        except (Exception, KeyError):
+        except (Exception, KeyError) as _exc:
+            if isinstance(_exc, SocketIOError):
+                return
             self.end()
 
     def sync(self):
