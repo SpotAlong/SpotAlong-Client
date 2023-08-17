@@ -15,6 +15,7 @@ Copyright (C) 2020-Present CriticalElement
     along with this program at LICENSE.txt at the root of the source tree.
     If not, see <https://www.gnu.org/licenses/>.
 """
+from inspect import signature
 
 import browser_cookie3
 import requests
@@ -264,6 +265,17 @@ class SpotifyPlayer:
                                 self.connection_id = load['headers']['Spotify-Connection-Id']
                         if load.get('payloads'):
                             try:
+                                if 'items' in load['payloads'][0]:  # liked song change (I think)
+                                    for ev in self.event_reciever:
+                                        try:
+                                            func = signature(ev)
+                                            if len(func.parameters) > 0:
+                                                ev(load)
+                                            else:
+                                                ev()
+                                        except Exception as e:
+                                            logger.error('An exception occured while executing an event listener: ',
+                                                         exc_info=e)
                                 if load['payloads'][0].get('cluster'):
                                     try:
                                         self.queue = load['payloads'][0]['cluster']['player_state']['next_tracks']

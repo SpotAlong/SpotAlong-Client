@@ -1407,6 +1407,7 @@ class PlaybackController(QtWidgets.QWidget):
         self.horizontalLayout.addWidget(self.horizontalFrame4)
         self.horizontalLayout_3.addWidget(self.horizontalFrame1)
         self.verticalLayout.addWidget(self.horizontalFrame)
+        self._payload = None
         self.regenerate_icons()
         self.styles_to_ignore = [self.horizontalSlider, self.horizontalSlider_2]
         self.spotifyplayer.add_event_reciever(self.event_regenerate)
@@ -1461,14 +1462,13 @@ class PlaybackController(QtWidgets.QWidget):
             saved_songs = self.spotifyplayer.create_api_request(f'/me/tracks/contains?ids={self.spotifysong.songid}')
             self.is_saved = saved_songs.json()[0]
 
-        heart = 'cil-heart-filled' if self.is_saved else 'cil-heart'
-
         @self.handle_regeneration_error
         def heart_function():
             self.slider_release_time = time.time()
             if self.is_saved:
                 self.spotifyplayer.create_api_request(f'/me/tracks?ids={self.spotifysong.songid}',
                                                       request_type='DELETE')
+
                 self.pushButton_6.setStyleSheet(
                     f"background-image: url({forward_data_dir}icons/20x20/cil-heart{self.scaled}.png);\n"
                     "background-repeat: none;\n"
@@ -1484,19 +1484,27 @@ class PlaybackController(QtWidgets.QWidget):
                     "background-position: center;\n"
                     "border: none;\n"
                     "background-color: rgba(0, 0, 0, 0);")
-
-            Thread(target=saved_check).start()
+            self.is_saved = not self.is_saved
 
         if self.spotifysong.songid:
             self.pushButton_6.clicked.connect(lambda: Thread(target=heart_function).start())
         else:
             self.pushButton_6.hide()
-        self.pushButton_6.setStyleSheet(
-            f"background-image: url({forward_data_dir}icons/20x20/{heart}{self.scaled}.png);\n"
-            "background-repeat: none;\n"
-            "background-position: center;\n"
-            "border: none;\n"
-            "background-color: rgba(0, 0, 0, 0);")
+
+        def set_heart():
+            heart = 'cil-heart-filled' if self.is_saved else 'cil-heart'
+            self.pushButton_6.setStyleSheet(
+                f"background-image: url({forward_data_dir}icons/20x20/{heart}{self.scaled}.png);\n"
+                "background-repeat: none;\n"
+                "background-position: center;\n"
+                "border: none;\n"
+                "background-color: rgba(0, 0, 0, 0);")
+        set_heart()
+        if self._payload and time.time() - self.slider_release_time > 0.5:
+            runner = Runnable(saved_check)
+            runner.callback.connect(set_heart)
+            runner.start()
+
         shuffle = 'cil-shuffle-on' if self.spotifyplayer.shuffling else 'cil-shuffle'
 
         @self.handle_regeneration_error
@@ -1618,7 +1626,8 @@ class PlaybackController(QtWidgets.QWidget):
                     border-radius: 5px;
                     }""").replace('replace', repr(self.text_color)))
 
-    def event_regenerate(self):
+    def event_regenerate(self, payload=None):
+        self._payload = payload  # some weird hack to make singleShot work ???
         QtCore.QTimer().singleShot(0, self.regenerate_icons)
 
     def __del__(self):
@@ -4783,8 +4792,8 @@ class FriendUpdateThread(QtCore.QThread):
                     if id_ not in self.client.friendstatus:
                         self.emitter.emit(DeleteWidget(id_))
                         QtCore.QTimer.singleShot(0, self.update_friend_statuses)
-            except (requests.RequestException, Exception):
-                sys.excepthook(*sys.exc_info())
+            except (requests.RequestException, Exception) as _exc:
+                logger.error('An unexpected error occured: ', exc_info=_exc)
             time.sleep(0.25)
 
     def update_friend_statuses(self):
@@ -4869,8 +4878,8 @@ class RequestUpdateThread(QtCore.QThread):
                     if request not in self.client.outbound_friend_requests.copy():
                         self.emitter.emit(DeleteWidget(request))
                 self.outbound_last_requests = self.client.outbound_friend_requests.copy()
-            except (requests.RequestException, Exception):
-                sys.excepthook(*sys.exc_info())
+            except (requests.RequestException, Exception) as _exc:
+                logger.error('An unexpected error occured: ', exc_info=_exc)
             time.sleep(0.25)
 
 
@@ -4909,8 +4918,8 @@ class FriendHistoryUpdateThread(QtCore.QThread):
                     if id_ not in self.client.friendstatus.copy():
                         self.emitter.emit(DeleteWidget(id_))
                 self.last_friends = self.client.friendstatus.copy()
-            except (requests.RequestException, Exception):
-                sys.excepthook(*sys.exc_info())
+            except (requests.RequestException, Exception) as _exc:
+                logger.error('An unexpected error occured: ', exc_info=_exc)
             time.sleep(0.25)
 
 
