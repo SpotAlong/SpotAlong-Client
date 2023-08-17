@@ -1501,7 +1501,7 @@ class PlaybackController(QtWidgets.QWidget):
                 "background-color: rgba(0, 0, 0, 0);")
         set_heart()
         if self._payload and time.time() - self.slider_release_time > 0.5:
-            runner = Runnable(saved_check)
+            runner = Runnable(saved_check, parent=mainui)
             runner.callback.connect(set_heart)
             runner.start()
 
