@@ -3214,7 +3214,12 @@ class AdvancedUserStatus(QtWidgets.QWidget):
                             mainui.pushButton_18.click()
                             return
 
-                    mainui.client.client.emit('start_listening', self.spotifysong.client_id, '/api/authorization')
+                    try:
+                        mainui.client.client.emit('start_listening', self.spotifysong.client_id, '/api/authorization')
+                    except Exception as _exc:
+                        logger.error('An unexpected error occured while trying to listen along: ', exc_info=_exc)
+                        mainui.show_snack_bar(SnackBar('An unexpected error occured while trying to listen along.',
+                                                       True, True))
 
                     def run():
                         dominant, dark, text = extract_color(spotifysong.albumimagelink)
