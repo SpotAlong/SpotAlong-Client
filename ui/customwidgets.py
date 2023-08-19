@@ -2772,6 +2772,7 @@ class Device(QtWidgets.QWidget):
         if ratio != 1:
             icons = ['cil-monitor', 'cil-mobile', 'cil-mobile-landscape', 'cil-screen-desktop', 'cil-gamepad',
                      'cil-speaker']
+            icons = [f'24x24\\{icon}' for icon in icons]
             scale_images(icons, ratio)
             scaled = 'scaled'
         device_images = {'COMPUTER': 'cil-monitor.png', 'SMARTPHONE': 'cil-mobile.png',
