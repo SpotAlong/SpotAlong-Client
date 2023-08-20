@@ -18,8 +18,10 @@ Copyright (C) 2020-Present CriticalElement
 
 import functools
 import re
+import time
 from typing import Callable, Union
 
+import PIL
 from appdirs import user_data_dir
 from PIL import Image
 from PyQt5 import QtWidgets
@@ -306,7 +308,11 @@ def scale_images(icons, ratio):
     """
 
     for icon in icons:
-        img = Image.open(f'{data_dir}icons\\{icon}.png')
+        try:
+            img = Image.open(f'{data_dir}icons\\{icon}.png')
+        except PIL.UnidentifiedImageError:
+            time.sleep(0.5)  # wait for image to be closed by different thread
+            img = Image.open(f'{data_dir}icons\\{icon}.png')
         img = img.resize((int(img.width * ratio), int(img.height * ratio)))
         img.save(f'{data_dir}icons\\{icon}scaled.png')
 

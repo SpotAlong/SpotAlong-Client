@@ -568,6 +568,7 @@ class BasicUserStatusWidget(QtWidgets.QWidget):
         self.text_color = text_color
         self.image_url = image_url
         self.resize(200, 250)
+        self.setMinimumHeight(250)
         self.setMaximumHeight(250)
         self.setObjectName("Form")
         self.verticalLayout = QtWidgets.QVBoxLayout(self)

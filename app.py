@@ -1311,9 +1311,16 @@ class MainUI(UiMainWindow):
         self.threadsafe_snackbar_runner = Runnable()
         self.threadsafe_snackbar_runner.args = ()
         self.threadsafe_snackbar_runner.kwargs = {}
-        self.threadsafe_snackbar_runner.callback.\
-            connect(lambda: self.show_snack_bar(SnackBar(*self.threadsafe_snackbar_runner.args,
-                                                         **self.threadsafe_snackbar_runner.kwargs)))
+
+        def show_snackbar():
+            fallback_title = self.threadsafe_snackbar_runner.kwargs.pop('fallback_title', '')
+            fallback_text = self.threadsafe_snackbar_runner.kwargs.pop('fallback_text', '')
+
+            self.show_snack_bar(SnackBar(*self.threadsafe_snackbar_runner.args,
+                                         **self.threadsafe_snackbar_runner.kwargs),
+                                fallback_title=fallback_title, fallback_text=fallback_text)
+
+        self.threadsafe_snackbar_runner.callback.connect(show_snackbar)
         if self.client.mainstatus.playing_status == 'Listening':
             QtCore.QTimer.singleShot(5000, lambda: Thread(target=self.client.send_queue_for_caching).start())
         self.timer.start()
@@ -1346,9 +1353,11 @@ class MainUI(UiMainWindow):
         self.threadsafe_snackbar_runner.kwargs = kwargs
         self.threadsafe_snackbar_runner.run()
 
-    def show_snack_bar(self, snack_bar: SnackBar):
+    def show_snack_bar(self, snack_bar: SnackBar, fallback_title='', fallback_text=''):
         def show_():
-            if self.isHidden():
+            if self.isHidden() or (not self.isActiveWindow() and fallback_title):
+                if fallback_title:
+                    app.tray.showMessage(fallback_title, fallback_text, QtGui.QIcon(data_dir + 'logo.ico'), 5000)
                 return
             self.current_snack_bar = snack_bar
             snack_bar.show()

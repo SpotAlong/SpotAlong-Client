@@ -320,6 +320,8 @@ class MainClient:
 
         def new_friend(data):
             self.friends.update({data['id']: SpotifyClient(data['id'], data['friend_code'], data)})
+            text = f'{data["display_name"]} is now your friend.'
+            self.ui.show_snack_bar_threadsafe(text, fallback_title='New Friend', fallback_text=text)
 
         def remove_friend(data):
             self.friends.pop(data['id'], None)
@@ -334,12 +336,17 @@ class MainClient:
                     QtCore.QTimer.singleShot(0, self.ui.timer.start)
                 self.listening_friends_time[data] = time.time()
                 QtCore.QTimer.singleShot(0, self.ui.worker2.update_friend_statuses)
+                text = f'{self.friendstatus[data].clientusername} started listening along to you.'
+                self.ui.show_snack_bar_threadsafe(text, fallback_title='Listening Along', fallback_text=text)
                 self.send_next_for_listening(force=True)
 
         def end_listening(data):
             try:
                 self.listening_friends.pop(self.listening_friends.index(data))
                 self.listening_friends_time.pop(data)
+                if data in self.friendstatus:
+                    text = f'{self.friendstatus[data].clientusername} stopped listening along to you.'
+                    self.ui.show_snack_bar_threadsafe(text, fallback_title='Listening Along', fallback_text=text)
             except ValueError:
                 pass
             if len(self.listening_friends) == 0:
