@@ -142,6 +142,11 @@ class MainClient:
             if self.disconnected:
                 return
             self.disconnected = True
+            try:
+                if self.ui.listentofriends.spotifylistener:
+                    self.ui.listentofriends.spotifylistener.end(no_log=True)
+            except socketio.exceptions.SocketIOError as _exc:
+                logger.error('An error occured while trying to end the listening along session: ', exc_info=_exc)
             self.client.disconnect()
             self.listening_friends = []
             self.listening_friends_time = {}
