@@ -1517,7 +1517,7 @@ if __name__ == '__main__':
     app.setWindowIcon(QtGui.QIcon(data_dir + 'logo.ico'))
     if sys.platform == 'win32':
         import ctypes
-        appid = 'CriticalElement.SpotAlong.SpotAlong.1.0'
+        appid = 'CriticalElement.SpotAlong'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 
     if not os.path.isdir(f'{data_dir}/icons'):
