@@ -1181,6 +1181,8 @@ class MainUI(UiMainWindow):
         self.scrollAreaWidgetContents.setStyleSheet('background-color: rgb(33, 37, 43);')
         self.label_23.setFixedHeight(35)
         self.scrollAreaWidgetContents_2.setStyleSheet('background-color: rgb(33, 37, 43);')
+        self.scrollArea_4.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scrollArea_3.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.verticalFrame_4.setMinimumWidth(250)
 
         self.friendlistopened = True  # sidebar related
@@ -1604,6 +1606,7 @@ if __name__ == '__main__':
             window.showNormal()
 
     show_action.triggered.connect(maximize_from_tray)
+    tray.messageClicked.connect(maximize_from_tray)
     menu.addAction(show_action)
     minimize_action = QtWidgets.QAction('Minimize To Tray   ')  # padding
 

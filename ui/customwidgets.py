@@ -2060,7 +2060,8 @@ class PastFriendStatus(QtWidgets.QWidget):
     def __init__(self, friendstatus: SpotifySong, playlist_name, last_timestamp: datetime.datetime = None,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setFixedWidth(250)
+        self.setMinimumWidth(240)
+        self.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred))
         self.friendstatus = friendstatus
         self.playlist_name = playlist_name
         self.last_timestamp = last_timestamp
