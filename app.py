@@ -216,6 +216,8 @@ class MainUI(UiMainWindow):
         self.offlinefriendlist = {}
         self.advancedfriendstatuses = {}
         self.horizontalLayout_6.setAlignment(QtCore.Qt.AlignCenter)
+        self.verticalLayout_16.setContentsMargins(0, 0, 0, 5)
+        self.verticalLayout_22.setContentsMargins(15, 0, 0, 5)
         it = 1
         for id_, friend in client.friendstatus.items():
             skipiter = False
