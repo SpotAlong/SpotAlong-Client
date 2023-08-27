@@ -45,7 +45,7 @@ try:
         REGULAR_BASE = urls['REGULAR_BASE']
 except Exception as exc:
     logger.warning('Arbitrary error occurred when getting server url, reverting to defaults: ', exc_info=exc)
-    BASE_URL = 'https://spotalong-dnizz.ondigitalocean.app/api'
-    REGULAR_BASE = 'https://spotalong-dnizz.ondigitalocean.app/'
+    BASE_URL = 'https://spotalong-tj6cy.ondigitalocean.app/api'
+    REGULAR_BASE = 'https://spotalong-tj6cy.ondigitalocean.app/'
 
 VERSION = '1.0.0'  # change this at your own risk (don't)
