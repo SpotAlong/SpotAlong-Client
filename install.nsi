@@ -60,6 +60,7 @@ StrCmp $0 "" 0 next ; pop strings until a blank one arrives
 Delete "$INSTDIR\app.zip"
 
 CreateShortcut "$SMPROGRAMS\SpotAlong.lnk" "$INSTDIR\SpotAlong.exe"
+ApplicationID::Set "$SMPROGRAMS\SpotAlong.lnk" "CriticalElement.SpotAlong"
 
 WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "DisplayName"          "SpotAlong"
 WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "DisplayVersion"       "1.0.0"

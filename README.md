@@ -33,7 +33,7 @@ python app.py
 ```
 
 ## Compile Installer
-A helper script has been included at `build.py` that can automatically create the executable file, zip all dependencies, and compile the installer using makensis. Simply run the file and the installer will be created at `./SpotAlong-Installer.exe`. Please note that NSIS must be installed and makensis.exe must be added to PATH.
+A helper script has been included at `build.py` that can automatically create the executable file, zip all dependencies, and compile the installer using makensis. Simply run the file and the installer will be created at `./SpotAlong-Installer.exe`. Please note that NSIS must be installed and makensis.exe must be added to PATH. Aditionally, the [nsisunz](https://nsis.sourceforge.io/Nsisunz_plug-in) and [ApplicationID](https://nsis.sourceforge.io/ApplicationID_plug-in) plugins must be installed.
 
 # Roadmap
 
