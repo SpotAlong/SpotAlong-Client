@@ -25,7 +25,7 @@ if __name__ == '__main__' and '--ignore-singleton' not in sys.argv:
     if sys.platform == 'win32':
         import win32gui
 
-        regex = re.compile(r'\w* - SpotAlong')
+        regex = re.compile(r'[\w\s]+ - SpotAlong')
         found_window = False
 
 
