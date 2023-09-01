@@ -21,7 +21,7 @@ import re
 import sys
 
 # check if app is already running
-if __name__ == '__main__':
+if __name__ == '__main__' and '--ignore-singleton' not in sys.argv:
     if sys.platform == 'win32':
         import win32gui
 
