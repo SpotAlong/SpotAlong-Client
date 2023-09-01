@@ -17,15 +17,38 @@ __copyright__ = 'Copyright (C) 2020-Present CriticalElement'
 __version__ = '1.0.0'
 
 
+import re
+import sys
+
+# check if app is already running
+if __name__ == '__main__':
+    if sys.platform == 'win32':
+        import win32gui
+
+        regex = re.compile(r'\w* - SpotAlong')
+        found_window = False
+
+
+        def enumerate_windows(hwnd, _):
+            global found_window
+
+            if re.match(regex, win32gui.GetWindowText(hwnd)):
+                win32gui.ShowWindow(hwnd, 9)
+                win32gui.SetForegroundWindow(hwnd)
+                found_window = True
+
+
+        win32gui.EnumWindows(enumerate_windows, None)
+        if found_window:
+            exit(0)
+
 import datetime
 import io
 import gc
 import json
 import logging
 import os
-import sys
 import time
-import re
 import typing
 
 import mainclient
@@ -1447,6 +1470,9 @@ class MainUI(UiMainWindow):
         QtCore.QTimer.singleShot(interval * 1000, lambda: text.setText(second))
 
     def eventFilter(self, watched, event):
+        if isinstance(event, QtGui.QEnterEvent):
+            if app.tray.isMinimized:
+                app.maximize_from_tray()
         if not self.isInitialized:
             return UiMainWindow.eventFilter(self, watched, event)
         if watched in (self.label_4, self.label_7) and event.type() == QtCore.QEvent.MouseButtonDblClick:
@@ -1603,19 +1629,23 @@ if __name__ == '__main__':
             window = starting['fourth'].ui
             if window.disconnected:
                 window.disconnect_overlay.show(fast=True)
+            tray.isMinimized = False
             window.show()
             window.activateWindow()
             window.showNormal()
 
+    app.maximize_from_tray = maximize_from_tray
     show_action.triggered.connect(maximize_from_tray)
     tray.messageClicked.connect(maximize_from_tray)
     menu.addAction(show_action)
+    tray.isMinimized = False
     minimize_action = QtWidgets.QAction('Minimize To Tray   ')  # padding
 
     def minimize_to_tray():
         if starting.get('fourth'):
             _ui = starting['fourth'].ui
             _ui.close()
+            tray.isMinimized = True
             if _ui.disconnected:
                 _ui.disconnect_overlay.hide(fast=True)
 
