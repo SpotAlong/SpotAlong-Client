@@ -40,7 +40,7 @@ if __name__ == '__main__' and '--ignore-singleton' not in sys.argv:
 
         win32gui.EnumWindows(enumerate_windows, None)
         if found_window:
-            exit(0)
+            sys.exit(0)
 
 import datetime
 import io
