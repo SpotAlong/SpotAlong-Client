@@ -1470,9 +1470,9 @@ class MainUI(UiMainWindow):
         QtCore.QTimer.singleShot(interval * 1000, lambda: text.setText(second))
 
     def eventFilter(self, watched, event):
-        if isinstance(event, QtGui.QEnterEvent):
+        if isinstance(event, QtGui.QEnterEvent) and self is watched:
             if app.tray.isMinimized:
-                app.maximize_from_tray()
+                QtCore.QTimer.singleShot(200, app.maximize_from_tray)
         if not self.isInitialized:
             return UiMainWindow.eventFilter(self, watched, event)
         if watched in (self.label_4, self.label_7) and event.type() == QtCore.QEvent.MouseButtonDblClick:
