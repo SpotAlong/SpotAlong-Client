@@ -43,6 +43,8 @@ InitPluginsDir
 
 File ".\dist\app.zip"
 
+AddSize 150000
+
 nsisunz::UnzipToStack "$INSTDIR\app.zip" "$INSTDIR"
 
 Pop $0
