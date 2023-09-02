@@ -618,6 +618,7 @@ class MainUI(UiMainWindow):
 
         def stop_all():
             # stop all the QTimers and attempt to delete everything
+            app.tray.setVisible(False)
             self.worker.exit(0)
             self.worker.running = False
             self.worker2.exit(0)
@@ -1349,6 +1350,7 @@ class MainUI(UiMainWindow):
         geometry.moveCenter(QtWidgets.QDesktopWidget().availableGeometry().center())
         self.move(geometry.topLeft())
         self.isInitialized = True
+        app.tray.setVisible(True)
         progress_bar.setValue(100)
         if not self.client.spotifyplayer:
             self.active_dialog = Dialog('A login error occured', 'There was an error with your login, and so the '
@@ -1622,7 +1624,6 @@ if __name__ == '__main__':
     tray = QtWidgets.QSystemTrayIcon()
     app.tray = tray
     tray.setIcon(QtGui.QIcon(data_dir + 'logo.ico'))
-    tray.setVisible(True)
     tray.setToolTip('SpotAlong')
     menu = QtWidgets.QMenu()
     name = QtWidgets.QAction('SpotAlong')
