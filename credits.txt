@@ -23,6 +23,7 @@ gunicorn
 eventlet
 keyring
 pyperclip
+psutil
 
 A special thanks goes to Wanderson and his amazing PyQt interfaces, one of which was the inspiration for SpotAlong:
 https://github.com/Wanderson-Magalhaes/Simple_PySide_Base

@@ -19,28 +19,26 @@ __version__ = '1.0.0'
 
 import re
 import sys
+import socket
 
 # check if app is already running
 if __name__ == '__main__' and '--ignore-singleton' not in sys.argv:
-    if sys.platform == 'win32':
-        import win32gui
+    import psutil
 
-        regex = re.compile(r'[\w\s]+ - SpotAlong')
-        found_window = False
+    ADDR = 'localhost'
+    PORT = 49475
+    for arg in sys.argv:
+        if arg.startswith('--port') or arg.startswith('-p'):
+            PORT = int(arg.split('=')[1])
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        is_open = False
+        if PORT in [c.laddr.port for c in psutil.net_connections()]:
+            s.connect((ADDR, PORT))
+            s.sendall(b'raise')
+            is_open = True
 
-
-        def enumerate_windows(hwnd, _):
-            global found_window
-
-            if re.match(regex, win32gui.GetWindowText(hwnd)):
-                win32gui.ShowWindow(hwnd, 9)
-                win32gui.SetForegroundWindow(hwnd)
-                found_window = True
-
-
-        win32gui.EnumWindows(enumerate_windows, None)
-        if found_window:
-            sys.exit(0)
+    if is_open:
+        sys.exit(0)
 
 import datetime
 import io
@@ -132,6 +130,10 @@ class MainUI(UiMainWindow):
                  client: MainClient, progress_bar, *args: tuple, **kwargs: dict):
         UiMainWindow.__init__(self, *args, **kwargs)
         global app
+        self.PORT = 49475
+        for arg in sys.argv:
+            if arg.startswith('--port') or arg.startswith('-p'):
+                self.PORT = int(arg.split('=')[1])
         self.isInitialized = False
         self.isshown = False
         self.accent_color = accent_color
@@ -624,6 +626,11 @@ class MainUI(UiMainWindow):
             self.worker3.running = False
             self.worker4.exit(0)
             self.worker4.running = False
+            self.worker5.exit(0)
+            if '--ignore-singleton' not in sys.argv:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                    sock.connect(('localhost', self.PORT))
+                    sock.sendall(b'close')
             self.timer.stop()
             if hasattr(self, 'playbackcontroller') and hasattr(self.playbackcontroller, 'timer3'):
                 self.playbackcontroller.timer2.stop()
@@ -1022,6 +1029,20 @@ class MainUI(UiMainWindow):
         self.worker4 = FriendHistoryUpdateThread(client, self)
         self.worker4.emitter.connect(friend_history_updater)
         self.worker4.start()
+
+        def listen_to_socket(byte_str):
+            if byte_str == b'raise':
+                app.maximize_from_tray()
+                if sys.platform == 'win32':
+                    import ctypes
+                    hwnd = int(self.winId())
+                    ctypes.windll.user32.ShowWindow(hwnd, 9)
+                    ctypes.windll.user32.SetForegroundWindow(hwnd)
+
+        self.worker5 = SocketListener(self.PORT, parent=self)
+        self.worker5.setTerminationEnabled(True)
+        self.worker5.emitter.connect(listen_to_socket)
+        self.worker5.start()
 
         progress_bar.setValue(90)
 
@@ -1470,9 +1491,6 @@ class MainUI(UiMainWindow):
         QtCore.QTimer.singleShot(interval * 1000, lambda: text.setText(second))
 
     def eventFilter(self, watched, event):
-        if isinstance(event, QtGui.QEnterEvent) and self is watched:
-            if app.tray.isMinimized:
-                QtCore.QTimer.singleShot(200, app.maximize_from_tray)
         if not self.isInitialized:
             return UiMainWindow.eventFilter(self, watched, event)
         if watched in (self.label_4, self.label_7) and event.type() == QtCore.QEvent.MouseButtonDblClick:
@@ -1629,7 +1647,6 @@ if __name__ == '__main__':
             window = starting['fourth'].ui
             if window.disconnected:
                 window.disconnect_overlay.show(fast=True)
-            tray.isMinimized = False
             window.show()
             window.activateWindow()
             window.showNormal()
@@ -1638,14 +1655,12 @@ if __name__ == '__main__':
     show_action.triggered.connect(maximize_from_tray)
     tray.messageClicked.connect(maximize_from_tray)
     menu.addAction(show_action)
-    tray.isMinimized = False
     minimize_action = QtWidgets.QAction('Minimize To Tray   ')  # padding
 
     def minimize_to_tray():
         if starting.get('fourth'):
             _ui = starting['fourth'].ui
             _ui.close()
-            tray.isMinimized = True
             if _ui.disconnected:
                 _ui.disconnect_overlay.hide(fast=True)
 

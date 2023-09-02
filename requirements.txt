@@ -12,3 +12,4 @@ websocket-client
 pycryptodome
 keyring
 pyperclip
+psutil

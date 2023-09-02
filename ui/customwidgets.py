@@ -21,12 +21,12 @@ from __future__ import annotations
 import logging
 import random
 import re
+import socket
 import typing
 import time
 import datetime
 import json
 import os
-import sys
 from io import StringIO
 from threading import Thread
 
@@ -64,7 +64,7 @@ __all__ = ('PartialStatusWidget', 'StatusWidget', 'FriendsListStatusWidget', 'Pa
            'PastFriendStatus', 'FriendHistoryUpdateThread', 'LogViewer', 'PartialAdvancedUserStatus',
            'AdvancedUserStatus', 'PartialListedFriendStatus', 'ListedFriendStatus', 'PartialDeviceList', 'DeviceList',
            'Device', 'Dialog', 'Tooltip', 'PartialListeningToFriends', 'ListeningToFriends', 'DisconnectBanner',
-           'SnackBar')
+           'SnackBar', 'SocketListener')
 
 mainui: typing.Optional[MainUI] = None
 
@@ -4924,6 +4924,34 @@ class FriendHistoryUpdateThread(QtCore.QThread):
             except (requests.RequestException, Exception) as _exc:
                 logger.error('An unexpected error occured: ', exc_info=_exc)
             time.sleep(0.25)
+
+
+class SocketListener(QtCore.QThread):
+    """
+        This is a QThread that listens to activity on port 49475, to prevent multiple instances being opened.
+    """
+    emitter = QtCore.pyqtSignal(bytes)
+
+    def __init__(self, port, *args, **kwargs):
+        super(SocketListener, self).__init__(*args, **kwargs)
+        self.ADDR = 'localhost'
+        self.PORT = port
+
+    def run(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind((self.ADDR, self.PORT))
+            except OSError as _exc:
+                logger.error(f'An error occured while trying to bind to port {self.PORT}: ', exc_info=_exc)
+                return
+            while True:
+                s.listen()
+                conn, _ = s.accept()
+                with conn:
+                    data = conn.recv(1024)
+                    if data == b'close':
+                        return
+                    self.emitter.emit(data)
 
 
 class DeleteWidget:

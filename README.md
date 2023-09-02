@@ -19,7 +19,6 @@ To manually install SpotAlong-Client, clone the repository to a folder of your c
 python -m venv venv
 venv\Scripts\activate
 python -m pip install -r requirements.txt
-python -m pip install pywin32
 python app.py
 ```
 Note that `python` (line 1 only) may be replaced with `py -3` depending on your installation.<br/>
