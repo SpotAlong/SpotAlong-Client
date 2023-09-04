@@ -517,7 +517,10 @@ class MainClient:
     def quit(self, code):
         try:
             if self.ui:
-                self.ui.stop_all()
+                if code == 0:
+                    self.ui.stop_all_fast()
+                else:
+                    self.ui.stop_all()
         except Exception as exc:
             logger.error('An error occured while trying to quit: ', exc_info=exc)
         if self.spotifyplayer:

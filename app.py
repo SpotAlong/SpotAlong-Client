@@ -655,7 +655,12 @@ class MainUI(UiMainWindow):
             self.deleteLater()
             gc.collect()
 
+        def stop_all_fast():
+            self.close()
+            stop_all()
+
         self.stop_all = stop_all
+        self.stop_all_fast = stop_all_fast
 
         self.pushButton_17.clicked.connect(lambda: self.__setattr__(
             'active_dialog', Dialog('Log Out', 'Are you sure you want to log out? This will return you back to the'
@@ -1031,14 +1036,17 @@ class MainUI(UiMainWindow):
         self.worker4.emitter.connect(friend_history_updater)
         self.worker4.start()
 
+        def set_foreground_window():
+            app.maximize_from_tray()
+            if sys.platform == 'win32':
+                import ctypes
+                hwnd = int(self.winId())
+                ctypes.windll.user32.ShowWindow(hwnd, 9)
+                ctypes.windll.user32.SetForegroundWindow(hwnd)
+
         def listen_to_socket(byte_str):
             if byte_str == b'raise':
-                app.maximize_from_tray()
-                if sys.platform == 'win32':
-                    import ctypes
-                    hwnd = int(self.winId())
-                    ctypes.windll.user32.ShowWindow(hwnd, 9)
-                    ctypes.windll.user32.SetForegroundWindow(hwnd)
+                set_foreground_window()
 
         self.worker5 = SocketListener(self.PORT, parent=self)
         self.worker5.setTerminationEnabled(True)
@@ -1351,6 +1359,11 @@ class MainUI(UiMainWindow):
         self.move(geometry.topLeft())
         self.isInitialized = True
         app.tray.setVisible(True)
+        try:
+            app.tray.messageClicked.disconnect()
+        except TypeError:
+            pass
+        app.tray.messageClicked.connect(set_foreground_window)
         progress_bar.setValue(100)
         if not self.client.spotifyplayer:
             self.active_dialog = Dialog('A login error occured', 'There was an error with your login, and so the '
@@ -1665,6 +1678,7 @@ if __name__ == '__main__':
             if _ui.disconnected:
                 _ui.disconnect_overlay.hide(fast=True)
 
+    app.minimize_to_tray = minimize_to_tray
     minimize_action.triggered.connect(minimize_to_tray)
     menu.addAction(minimize_action)
     menu.setStyleSheet('''QMenu::item:selected {
