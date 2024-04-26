@@ -35,7 +35,9 @@ from utils.uiutils import DpiFont, adjust_sizing, get_ratio, scale_one
 
 QtGui.QFont = DpiFont
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + os.path.sep
+sep = os.path.sep
+
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
 forward_data_dir = data_dir
 
 
@@ -252,7 +254,7 @@ class LoadingScreenUi(QtWidgets.QMainWindow):
         scaled = ''
         ratio = get_ratio()
         if ratio != 1:
-            scale_one(f'{forward_data_dir}splash\\forest-slice', ratio)
+            scale_one(f'{forward_data_dir}splash{sep}forest-slice', ratio)
             scaled = 'scaled'
         self.progressBar.setStyleSheet("QProgressBar {\n"
                                        "    background-color: rgba(120, 120, 120, 150);\n"

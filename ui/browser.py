@@ -30,9 +30,9 @@ from appdirs import user_data_dir
 
 from utils.uiutils import adjust_sizing, get_ratio, scale_images
 
-pathseparator = os.path.sep
+sep = os.path.sep
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + pathseparator
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
 
 
 class WebEngineUrlRequestInterceptor(QWebEngineUrlRequestInterceptor):
@@ -66,8 +66,8 @@ class Browser(QWidget):
         scaled = ''
         ratio = get_ratio()
         if ratio != 1:
-            icons = ['24x24\\cil-window-restore', '24x24\\cil-window-maximize',
-                     '16x16\\cil-size-grip', '24x24\\cil-x', '24x24\\cil-window-maximize', '24x24\\cil-window-minimize']
+            icons = [f'24x24{sep}cil-window-restore', f'24x24{sep}cil-window-maximize',
+                     f'16x16{sep}cil-size-grip', f'24x24{sep}cil-x', f'24x24{sep}cil-window-maximize', f'24x24{sep}cil-window-minimize']
             scale_images(icons, ratio)
             scaled = 'scaled'
         self.setStyleSheet("#Form {\n"
@@ -122,7 +122,7 @@ class Browser(QWidget):
         self.pushButton.setMaximumSize(QSize(40, 40))
         self.pushButton.setText("")
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.setIcon(QIcon(data_dir + f'icons\\24x24\\cil-window-minimize{scaled}.png'))
+        self.pushButton.setIcon(QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-minimize{scaled}.png'))
         self.pushButton.clicked.connect(lambda: self.showMinimized())  # noqa
         self.horizontalLayout.addWidget(self.pushButton)
         self.pushButton_2 = QPushButton(self.horizontalFrame)
@@ -130,14 +130,14 @@ class Browser(QWidget):
         self.pushButton_2.setMaximumSize(QSize(40, 40))
         self.pushButton_2.setText("")
         self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.setIcon(QIcon(data_dir + f'icons\\24x24\\cil-window-maximize{scaled}.png'))
+        self.pushButton_2.setIcon(QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-maximize{scaled}.png'))
         self.horizontalLayout.addWidget(self.pushButton_2)
         self.pushButton_3 = QPushButton(self.horizontalFrame)
         self.pushButton_3.setMinimumSize(QSize(40, 40))
         self.pushButton_3.setMaximumSize(QSize(40, 40))
         self.pushButton_3.setText("")
         self.pushButton_3.setObjectName("pushButton_3")
-        self.pushButton_3.setIcon(QIcon(data_dir + f'icons\\24x24\\cil-x{scaled}.png'))
+        self.pushButton_3.setIcon(QIcon(data_dir + f'icons{sep}24x24{sep}cil-x{scaled}.png'))
         self.pushButton_3.clicked.connect(lambda: (self.webview.page().deleteLater(), self.webview.deleteLater(),  # noqa
                                                    self.webview.page().profile().deleteLater(), self.close(),
                                                    self.deleteLater()))
@@ -198,10 +198,10 @@ class Browser(QWidget):
         def maximizeCheck(_=None):
             if self.isMaximized():
                 self.showNormal()
-                self.pushButton_2.setIcon(QIcon(data_dir + f'icons\\24x24\\cil-window-maximize{scaled}.png'))
+                self.pushButton_2.setIcon(QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-maximize{scaled}.png'))
             else:
                 self.showMaximized()
-                self.pushButton_2.setIcon(QIcon(data_dir + f'icons\\24x24\\cil-window-restore{scaled}.png'))
+                self.pushButton_2.setIcon(QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-restore{scaled}.png'))
 
         self.pushButton_2.clicked.connect(maximizeCheck)  # noqa
         self.label.mouseDoubleClickEvent = maximizeCheck
