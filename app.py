@@ -81,9 +81,9 @@ from utils.constants import *
 
 QtGui.QFont = DpiFont
 
-pathseparator = os.path.sep # Linux: /, Windows: \
+sep = os.path.sep # Linux: /, Windows: \
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + pathseparator
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
 
 level = logging.INFO
 if {'-d', '-v', '--debug', '--verbose'} & set(sys.argv):
@@ -167,12 +167,12 @@ class MainUI(UiMainWindow):
         ratio = get_ratio()
         self.ratio = ratio
         if ratio != 1:
-            icons = ['24x24\\cil-menu', '24x24\\cil-window-minimize', '24x24\\cil-window-maximize', '24x24\\cil-x',
-                     '16x16\\cil-people', '16x16\\cil-history', '16x16\\cil-size-grip', '20x20\\cil-home',
-                     '20x20\\cil-settings', '20x20\\cil-people', '20x20\\cil-user-follow', '20x20\\cil-headphones',
-                     '20x20\\cil-user-follow-notif', '24x24\\cil-lock-locked', '24x24\\cil-exit-to-app',
-                     '24x24\\cil-check-alt', '24x24\\cil-trash', '24x24\\cil-save', '24x24\\cil-terminal',
-                     '16x16\\cil-arrow-bottom', '16x16\\cil-arrow-top', '24x24\\cil-window-restore']
+            icons = [f'24x24{sep}cil-menu', f'24x24{sep}cil-window-minimize', f'24x24{sep}cil-window-maximize', f'24x24{sep}cil-x',
+                     f'16x16{sep}cil-people', f'16x16{sep}cil-history', f'16x16{sep}cil-size-grip', f'20x20{sep}cil-home',
+                     f'20x20{sep}cil-settings', f'20x20{sep}cil-people', f'20x20{sep}cil-user-follow', f'20x20{sep}cil-headphones',
+                     f'20x20{sep}cil-user-follow-notif', f'24x24{sep}cil-lock-locked', f'24x24{sep}cil-exit-to-app',
+                     f'24x24{sep}cil-check-alt', f'24x24{sep}cil-trash', f'24x24{sep}cil-save', f'24x24{sep}cil-terminal',
+                     f'16x16{sep}cil-arrow-bottom', f'16x16{sep}cil-arrow-top', f'24x24{sep}cil-window-restore']
             scale_images(icons, ratio)
             self.scaled = 'scaled'
         self.label_6.setText(f'v{VERSION}')
