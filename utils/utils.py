@@ -45,7 +45,7 @@ if typing.TYPE_CHECKING:
 __all__ = ('extract_color', 'feather_image', 'download_album', 'clean_album_image_cache', 'convert_from_utc_timestamp')
 
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + os.path.sep
 logger = logging.getLogger(__name__)
 
 

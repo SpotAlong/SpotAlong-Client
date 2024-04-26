@@ -16,6 +16,7 @@ Copyright (C) 2020-Present CriticalElement
     If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import functools
 import re
 import time
@@ -29,7 +30,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QPushButton
 from PyQt5.QtGui import QFont, QGuiApplication
 from PyQt5 import QtCore
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + os.path.sep
 
 __all__ = ('limit_text', 'limit_text_smart', 'limit_text_rich', 'safe_color', 'Runnable', 'DpiFont', 'adjust_sizing',
            'adj', 'adj_style', 'screen_height', 'dpi', 'get_ratio', 'scale_images', 'scale_one')

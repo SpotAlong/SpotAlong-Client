@@ -18,6 +18,7 @@ Copyright (C) 2020-Present CriticalElement
 
 import typing
 import keyring
+import os
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -29,8 +30,9 @@ from appdirs import user_data_dir
 
 from utils.uiutils import adjust_sizing, get_ratio, scale_images
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
-forward_data_dir = data_dir.replace('\\', '/')
+pathseparator = os.path.sep
+
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + pathseparator
 
 
 class WebEngineUrlRequestInterceptor(QWebEngineUrlRequestInterceptor):
@@ -172,7 +174,7 @@ class Browser(QWidget):
         self.verticalLayout_2.addWidget(self.horizontalFrame_2)
         self.sizegrip = QSizeGrip(self.horizontalFrame1)
         self.sizegrip.setFixedSize(30, 30)
-        self.sizegrip.setStyleSheet(f'''background-image: url({forward_data_dir}icons/16x16/cil-size-grip{scaled}.png);
+        self.sizegrip.setStyleSheet(f'''background-image: url({user_data_dir}icons/16x16/cil-size-grip{scaled}.png);
                                         background-position: right bottom;
                                         background-repeat: no-repeat;''')
         self.horizontalLayout_3.addWidget(self.sizegrip)

@@ -35,8 +35,8 @@ from utils.uiutils import DpiFont, adjust_sizing, get_ratio, scale_one
 
 QtGui.QFont = DpiFont
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
-forward_data_dir = data_dir.replace('\\', '/')
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + os.path.sep
+forward_data_dir = data_dir
 
 
 logger = logging.getLogger(__name__)
