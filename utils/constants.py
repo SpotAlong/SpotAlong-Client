@@ -19,14 +19,16 @@ Copyright (C) 2020-Present CriticalElement
 import json
 import logging
 import time
+import os
 
 import requests
 from appdirs import user_data_dir
 
+sep = os.path.sep
 
 __all__ = ('BASE_URL', 'REGULAR_BASE', 'VERSION')
 logger = logging.getLogger(__name__)
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
 
 
 try:

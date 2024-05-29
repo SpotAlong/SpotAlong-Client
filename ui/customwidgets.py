@@ -52,8 +52,10 @@ QtGui.QFont = DpiFont
 if typing.TYPE_CHECKING:
     from app import MainUI
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
-forward_data_dir = data_dir.replace('\\', '/')
+sep = os.path.sep
+
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
+forward_data_dir = data_dir
 logger = logging.getLogger(__name__)
 
 
@@ -757,12 +759,12 @@ class PartialPlaybackController:
             self.dark_color = dark_color
             self.text_color = text_color
             feather_image(url)
-            icons = ['24x24\\cil-media-play.png', '24x24\\cil-media-pause.png', '20x20\\cil-media-step-forward.png',
-                     '20x20\\cil-media-step-backward.png', '16x16\\cil-shuffle.png', '16x16\\cil-shuffle-on.png',
-                     '16x16\\cil-loop.png', '16x16\\cil-loop-on.png', '16x16\\cil-loop-1.png', '20x20\\cil-heart.png',
-                     '20x20\\cil-heart-filled.png', '16x16\\cil-screen-smartphone.png', '16x16\\cil-volume-high.png',
-                     '16x16\\cil-volume-low.png', '16x16\\cil-volume-off.png']
-            icons = [data_dir + 'icons\\' + icon for icon in icons]
+            icons = [f'24x24{sep}cil-media-play.png', f'24x24{sep}cil-media-pause.png', f'20x20{sep}cil-media-step-forward.png',
+                     f'20x20{sep}cil-media-step-backward.png', f'16x16{sep}cil-shuffle.png', f'16x16{sep}cil-shuffle-on.png',
+                     f'16x16{sep}cil-loop.png', f'16x16{sep}cil-loop-on.png', f'16x16{sep}cil-loop-1.png', f'20x20{sep}cil-heart.png',
+                     f'20x20{sep}cil-heart-filled.png', f'16x16{sep}cil-screen-smartphone.png', f'16x16{sep}cil-volume-high.png',
+                     f'16x16{sep}cil-volume-low.png', f'16x16{sep}cil-volume-off.png']
+            icons = [data_dir + f'icons{sep}' + icon for icon in icons]
             for icon in icons:
                 img = Image.open(icon)
                 img = img.convert('RGBA')
@@ -813,11 +815,11 @@ class PlaybackController(QtWidgets.QWidget):
         self.ratio = ratio
         if ratio != 1:
             self.ratio = ratio
-            icons = ['24x24\\cil-media-play', '24x24\\cil-media-pause', '20x20\\cil-media-step-forward',
-                     '20x20\\cil-media-step-backward', '16x16\\cil-shuffle', '16x16\\cil-shuffle-on',
-                     '16x16\\cil-loop', '16x16\\cil-loop-on', '16x16\\cil-loop-1', '20x20\\cil-heart',
-                     '20x20\\cil-heart-filled', '16x16\\cil-screen-smartphone', '16x16\\cil-volume-high',
-                     '16x16\\cil-volume-low', '16x16\\cil-volume-off']
+            icons = [f'24x24{sep}cil-media-play', f'24x24{sep}cil-media-pause', f'20x20{sep}cil-media-step-forward',
+                     f'20x20{sep}cil-media-step-backward', f'16x16{sep}cil-shuffle', f'16x16{sep}cil-shuffle-on',
+                     f'16x16{sep}cil-loop', f'16x16{sep}cil-loop-on', f'16x16{sep}cil-loop-1', f'20x20{sep}cil-heart',
+                     f'20x20{sep}cil-heart-filled', f'16x16{sep}cil-screen-smartphone', f'16x16{sep}cil-volume-high',
+                     f'16x16{sep}cil-volume-low', f'16x16{sep}cil-volume-off']
             scale_images(icons, ratio)
             self.scaled = 'scaled'
         if not dominant_color:
@@ -1680,7 +1682,7 @@ class InboundFriendRequest(QtWidgets.QWidget):
         scaled = ''
         ratio = get_ratio()
         if ratio != 1:
-            icons = ['20x20\\cil-x', '20x20\\cil-check-alt']
+            icons = [f'20x20{sep}cil-x', f'20x20{sep}cil-check-alt']
             scale_images(icons, ratio)
             scaled = 'scaled'
         self.setStyleSheet("background-color: rgb(39, 44, 54);"
@@ -1868,7 +1870,7 @@ class OutboundFriendRequest(QtWidgets.QWidget):
         scaled = ''
         ratio = get_ratio()
         if ratio != 1:
-            icons = ['20x20\\cil-x']
+            icons = [f'20x20{sep}cil-x']
             scale_images(icons, ratio)
             scaled = 'scaled'
         self.setStyleSheet("background-color: rgb(39, 44, 54);"
@@ -2284,7 +2286,7 @@ class LogViewer(QtWidgets.QWidget):
         scaled = ''
         ratio = get_ratio()
         if ratio != 1:
-            scale_one(f'{forward_data_dir}icons\\24x24\\cil-x', ratio)
+            scale_one(f'{forward_data_dir}icons{sep}24x24{sep}cil-x', ratio)
             scaled = 'scaled'
         self.pushButton.setStyleSheet("QPushButton {\n"
                                       "                background-color: rgb(44, 49, 60);\n"
@@ -2542,7 +2544,7 @@ class DeviceList(QtWidgets.QWidget):
         scaled = ''
         ratio = get_ratio()
         if ratio != 1:
-            scale_one(f'{forward_data_dir}icons\\24x24\\cil-x', ratio)
+            scale_one(f'{forward_data_dir}icons{sep}24x24{sep}cil-x', ratio)
             scaled = 'scaled'
         self.pushButton.setStyleSheet("QPushButton {\n"
                                       "    background-color: rgb(39, 44, 54);\n"
@@ -2774,7 +2776,7 @@ class Device(QtWidgets.QWidget):
         if ratio != 1:
             icons = ['cil-monitor', 'cil-mobile', 'cil-mobile-landscape', 'cil-screen-desktop', 'cil-gamepad',
                      'cil-speaker']
-            icons = [f'24x24\\{icon}' for icon in icons]
+            icons = [f'24x24{sep}{icon}' for icon in icons]
             scale_images(icons, ratio)
             scaled = 'scaled'
         device_images = {'COMPUTER': 'cil-monitor.png', 'SMARTPHONE': 'cil-mobile.png',
@@ -3827,9 +3829,9 @@ class PartialListeningToFriends:
             mainui.spotifylistener = SpotifyListener(mainui.client.spotifyplayer, mainui.client, friend_id)
             self.spotifylistener = mainui.spotifylistener
         if self.dominant_color:
-            icons = ['20x20\\cil-media-play.png', '20x20\\cil-loop-circular.png', '20x20\\cil-media-stop.png',
-                     '20x20\\cil-media-pause.png']
-            icons = [data_dir + 'icons\\' + icon for icon in icons]
+            icons = [f'20x20{sep}cil-media-play.png', f'20x20{sep}cil-loop-circular.png', f'20x20{sep}cil-media-stop.png',
+                     f'20x20{sep}cil-media-pause.png']
+            icons = [data_dir + f'icons{sep}' + icon for icon in icons]
             for icon in icons:
                 img = Image.open(icon)
                 img = img.convert('RGBA')
@@ -3905,8 +3907,8 @@ class ListeningToFriends(QtWidgets.QWidget):
         ratio = get_ratio()
         scaled = ''
         if ratio != 1:
-            icons = ['20x20\\cil-loop-circular', '20x20\\cil-media-play', '20x20\\cil-media-stop',
-                     '20x20\\cil-media-pause']
+            icons = [f'20x20{sep}cil-loop-circular', f'20x20{sep}cil-media-play', f'20x20{sep}cil-media-stop',
+                     f'20x20{sep}cil-media-pause']
             scale_images(icons, ratio)
             scaled = 'scaled'
         self.verticalFrame.setObjectName("verticalFrame")
@@ -4283,8 +4285,8 @@ class DisconnectBanner(QtWidgets.QWidget):
         self.ratio = ratio
         if ratio != 1:
             self.ratio = ratio
-            icons = ['24x24\\cil-window-minimize', '24x24\\cil-window-restore', '24x24\\cil-window-maximize',
-                     '24x24\\cil-x', '16x16\\cil-size-grip']
+            icons = [f'24x24{sep}cil-window-minimize', f'24x24{sep}cil-window-restore', f'24x24{sep}cil-window-maximize',
+                     f'24x24{sep}cil-x', f'16x16{sep}cil-size-grip']
             scale_images(icons, ratio)
             self.scaled = 'scaled'
         self.setStyleSheet('background-color: rgb(30, 40, 50);')
@@ -4424,11 +4426,11 @@ class DisconnectBanner(QtWidgets.QWidget):
         self.pushButton_2.clicked.connect(lambda: (mainui.close(), self.hide(fast=True)))  # noqa
         self.horizontalLayout_3.addWidget(self.pushButton_3)
         self.horizontalLayout_3.addWidget(self.pushButton_2)
-        self.pushButton_2.setIcon(QtGui.QIcon(data_dir + f'icons\\24x24\\cil-x{self.scaled}.png'))
+        self.pushButton_2.setIcon(QtGui.QIcon(data_dir + f'icons{sep}24x24{sep}cil-x{self.scaled}.png'))
         self.pushButton_2.setIconSize(QtCore.QSize(24 * ratio, 24 * ratio))
         self.maximized_check()
         self.pushButton_3.setIconSize(QtCore.QSize(24 * ratio, 24 * ratio))
-        self.pushButton_4.setIcon(QtGui.QIcon(data_dir + f'icons\\24x24\\cil-window-minimize{self.scaled}.png'))
+        self.pushButton_4.setIcon(QtGui.QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-minimize{self.scaled}.png'))
         self.pushButton_4.setIconSize(QtCore.QSize(24 * ratio, 24 * ratio))
         self.pushButton_3.clicked.connect(mainui.pushButton_3.click)
         self.pushButton_4.clicked.connect(mainui.showMinimized)
@@ -4487,9 +4489,9 @@ class DisconnectBanner(QtWidgets.QWidget):
 
     def maximized_check(self):
         if mainui.isMaximized():
-            self.pushButton_3.setIcon(QtGui.QIcon(data_dir + f'icons\\24x24\\cil-window-restore{self.scaled}.png'))
+            self.pushButton_3.setIcon(QtGui.QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-restore{self.scaled}.png'))
         else:
-            self.pushButton_3.setIcon(QtGui.QIcon(data_dir + f'icons\\24x24\\cil-window-maximize{self.scaled}.png'))
+            self.pushButton_3.setIcon(QtGui.QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-maximize{self.scaled}.png'))
 
     def show(self, fast=False):
         self.updateMask()

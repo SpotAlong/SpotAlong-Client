@@ -16,6 +16,7 @@ Copyright (C) 2020-Present CriticalElement
     If not, see <https://www.gnu.org/licenses/>.
 """
 
+import os
 import functools
 import re
 import time
@@ -29,7 +30,8 @@ from PyQt5.QtWidgets import QWidget, QLabel, QPushButton
 from PyQt5.QtGui import QFont, QGuiApplication
 from PyQt5 import QtCore
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
+sep = os.path.sep
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
 
 __all__ = ('limit_text', 'limit_text_smart', 'limit_text_rich', 'safe_color', 'Runnable', 'DpiFont', 'adjust_sizing',
            'adj', 'adj_style', 'screen_height', 'dpi', 'get_ratio', 'scale_images', 'scale_one')
@@ -309,12 +311,12 @@ def scale_images(icons, ratio):
 
     for icon in icons:
         try:
-            img = Image.open(f'{data_dir}icons\\{icon}.png')
+            img = Image.open(f'{data_dir}icons{sep}{icon}.png')
         except PIL.UnidentifiedImageError:
             time.sleep(0.5)  # wait for image to be closed by different thread
-            img = Image.open(f'{data_dir}icons\\{icon}.png')
+            img = Image.open(f'{data_dir}icons{sep}{icon}.png')
         img = img.resize((int(img.width * ratio), int(img.height * ratio)))
-        img.save(f'{data_dir}icons\\{icon}scaled.png')
+        img.save(f'{data_dir}icons{sep}{icon}scaled.png')
 
 
 def scale_one(fp, ratio):

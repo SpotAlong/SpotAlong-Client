@@ -49,7 +49,9 @@ watcher = logging.StreamHandler(stream=stream_io)
 watcher.setFormatter(logging.Formatter('%(message)s'))
 watcher.setLevel(logging.INFO)
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
+sep = os.path.sep
+
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
 
 
 class MainClient:

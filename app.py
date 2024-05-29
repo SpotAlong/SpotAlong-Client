@@ -81,8 +81,9 @@ from utils.constants import *
 
 QtGui.QFont = DpiFont
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
-forward_data_dir = data_dir.replace('\\', '/')
+sep = os.path.sep # Linux: /, Windows: \
+
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
 
 level = logging.INFO
 if {'-d', '-v', '--debug', '--verbose'} & set(sys.argv):
@@ -166,12 +167,12 @@ class MainUI(UiMainWindow):
         ratio = get_ratio()
         self.ratio = ratio
         if ratio != 1:
-            icons = ['24x24\\cil-menu', '24x24\\cil-window-minimize', '24x24\\cil-window-maximize', '24x24\\cil-x',
-                     '16x16\\cil-people', '16x16\\cil-history', '16x16\\cil-size-grip', '20x20\\cil-home',
-                     '20x20\\cil-settings', '20x20\\cil-people', '20x20\\cil-user-follow', '20x20\\cil-headphones',
-                     '20x20\\cil-user-follow-notif', '24x24\\cil-lock-locked', '24x24\\cil-exit-to-app',
-                     '24x24\\cil-check-alt', '24x24\\cil-trash', '24x24\\cil-save', '24x24\\cil-terminal',
-                     '16x16\\cil-arrow-bottom', '16x16\\cil-arrow-top', '24x24\\cil-window-restore']
+            icons = [f'24x24{sep}cil-menu', f'24x24{sep}cil-window-minimize', f'24x24{sep}cil-window-maximize', f'24x24{sep}cil-x',
+                     f'16x16{sep}cil-people', f'16x16{sep}cil-history', f'16x16{sep}cil-size-grip', f'20x20{sep}cil-home',
+                     f'20x20{sep}cil-settings', f'20x20{sep}cil-people', f'20x20{sep}cil-user-follow', f'20x20{sep}cil-headphones',
+                     f'20x20{sep}cil-user-follow-notif', f'24x24{sep}cil-lock-locked', f'24x24{sep}cil-exit-to-app',
+                     f'24x24{sep}cil-check-alt', f'24x24{sep}cil-trash', f'24x24{sep}cil-save', f'24x24{sep}cil-terminal',
+                     f'16x16{sep}cil-arrow-bottom', f'16x16{sep}cil-arrow-top', f'24x24{sep}cil-window-restore']
             scale_images(icons, ratio)
             self.scaled = 'scaled'
         self.label_6.setText(f'v{VERSION}')
@@ -191,23 +192,23 @@ class MainUI(UiMainWindow):
         output.putalpha(mask)
         output.resize((200, 200))
         output.save(data_dir + f'icon{self.client.mainstatus.client_id}.png')
-        self.pushButton.setIcon(QtGui.QIcon(data_dir + f'icons\\24x24\\cil-menu{self.scaled}.png'))
+        self.pushButton.setIcon(QtGui.QIcon(data_dir + f'icons{sep}24x24{sep}cil-menu{self.scaled}.png'))
         self.pushButton.setIconSize(QtCore.QSize(48 * ratio, 48 * ratio))
         self.label_7.setPixmap(QtGui.QPixmap(data_dir + 'logo.ico').scaled
                                (24 * ratio, 24 * ratio, transformMode=QtCore.Qt.SmoothTransformation))
         self.label_7.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
-        self.pushButton_4.setIcon(QtGui.QIcon(data_dir + f'icons\\24x24\\cil-window-minimize{self.scaled}.png'))
+        self.pushButton_4.setIcon(QtGui.QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-minimize{self.scaled}.png'))
         self.pushButton_4.tooltip = Tooltip('Minimize', self.pushButton_4)
         self.pushButton_4.setIconSize(QtCore.QSize(24 * ratio, 24 * ratio))
-        self.pushButton_3.setIcon(QtGui.QIcon(data_dir + f'icons\\24x24\\cil-window-maximize{self.scaled}.png'))
+        self.pushButton_3.setIcon(QtGui.QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-maximize{self.scaled}.png'))
         self.pushButton_3.tooltip = Tooltip('Maximize', self.pushButton_3)
         self.pushButton_3.setIconSize(QtCore.QSize(24 * ratio, 24 * ratio))
-        self.pushButton_2.setIcon(QtGui.QIcon(data_dir + f'icons\\24x24\\cil-x{self.scaled}.png'))
+        self.pushButton_2.setIcon(QtGui.QIcon(data_dir + f'icons{sep}24x24{sep}cil-x{self.scaled}.png'))
         self.pushButton_2.setIconSize(QtCore.QSize(24 * ratio, 24 * ratio))
         self.pushButton_2.tooltip = Tooltip('Close', self.pushButton_2)
-        self.pushButton_12.setIcon(QtGui.QIcon(data_dir + f'icons\\16x16\\cil-people{self.scaled}.png'))
+        self.pushButton_12.setIcon(QtGui.QIcon(data_dir + f'icons{sep}16x16{sep}cil-people{self.scaled}.png'))
         self.pushButton_12.tooltip = Tooltip('Show Friends List', self.pushButton_12)
-        self.pushButton_13.setIcon(QtGui.QIcon(data_dir + f'icons\\16x16\\cil-history{self.scaled}.png'))
+        self.pushButton_13.setIcon(QtGui.QIcon(data_dir + f'icons{sep}16x16{sep}cil-history{self.scaled}.png'))
         self.pushButton_13.tooltip = Tooltip('Show Recent Friend Activity', self.pushButton_13)
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
@@ -219,7 +220,7 @@ class MainUI(UiMainWindow):
         self.frame.setMinimumSize(QtCore.QSize(30, 0))
         self.frame.setMaximumSize(QtCore.QSize(30, 16777215))
         self.frame.setStyleSheet("QSizeGrip {\n"
-                                 f"	background-image: url({forward_data_dir}icons/16x16/cil-size-grip"
+                                 f"	background-image: url({data_dir}icons/16x16/cil-size-grip"
                                  f"{self.scaled}.png);\n "
                                  "  background-size: 48px;\n"
                                  "	background-position: bottom right;\n"
@@ -422,7 +423,7 @@ class MainUI(UiMainWindow):
     QPushButton:pressed {
         background-color: rgb(85, 170, 255);
         border-left: 20px solid rgb(85, 170, 255);
-    }''' % (forward_data_dir, self.scaled))
+    }''' % (data_dir, self.scaled))
         self.pushButton_6.setStyleSheet('''QPushButton {
                 background-image: url(%sicons/20x20/cil-settings%s.png);
                 background-position: left;
@@ -440,7 +441,7 @@ class MainUI(UiMainWindow):
             QPushButton:pressed {
                 background-color: rgb(85, 170, 255);
                 border-left: 20px solid rgb(85, 170, 255);
-            }''' % (forward_data_dir, self.scaled))
+            }''' % (data_dir, self.scaled))
         self.pushButton_14.setStyleSheet('''QPushButton {
                         background-image: url(%sicons/20x20/cil-people%s.png);
                         background-position: left;
@@ -458,7 +459,7 @@ class MainUI(UiMainWindow):
                     QPushButton:pressed {
                         background-color: rgb(85, 170, 255);
                         border-left: 20px solid rgb(85, 170, 255);
-                    }''' % (forward_data_dir, self.scaled))
+                    }''' % (data_dir, self.scaled))
         self.pushButton_11.setStyleSheet('''QPushButton {
                         background-image: url(%sicons/20x20/cil-user-follow%s.png);
                         background-position: left;
@@ -476,7 +477,7 @@ class MainUI(UiMainWindow):
                     QPushButton:pressed {
                         background-color: rgb(85, 170, 255);
                         border-left: 20px solid rgb(85, 170, 255);
-                    }''' % (forward_data_dir, self.scaled))
+                    }''' % (data_dir, self.scaled))
         self.pushButton_18.setStyleSheet('''QPushButton {
                                 background-image: url(%sicons/20x20/cil-headphones%s.png);
                                 background-position: left;
@@ -494,7 +495,7 @@ class MainUI(UiMainWindow):
                             QPushButton:pressed {
                                 background-color: rgb(85, 170, 255);
                                 border-left: 20px solid rgb(85, 170, 255);
-                            }''' % (forward_data_dir, self.scaled))
+                            }''' % (data_dir, self.scaled))
         self.comboBox.setStyleSheet(self.comboBox.styleSheet().replace('.png', f'{self.scaled}.png'))
         self.pushButton_18.setFont(self.pushButton_5.font())
         self.pushButton_8.setStyleSheet(self.pushButton_8.styleSheet().replace('20', '20px'))
@@ -574,7 +575,7 @@ class MainUI(UiMainWindow):
         self.pushButton.clicked.connect(self.menu_animation)
         self.label_30_originalStyleSheet = self.label_30.styleSheet()
         self.label_30.setStyleSheet(self.label_30.styleSheet().replace('replace',
-                                                                       f'{forward_data_dir}icon{client.id}.png'))
+                                                                       f'{data_dir}icon{client.id}.png'))
         self.label_31.setText(limit_text_smart(client.spotifyclient.clientUsername, self.label_31))
         self.label_34.setText(client.spotifyclient.friendCode)
         self.label_34.setStyleSheet('color: white; text-decoration: underline;')
@@ -590,14 +591,14 @@ class MainUI(UiMainWindow):
 
         self.label_34.mousePressEvent = lambda *_: copy()
 
-        self.pushButton_15.setIcon(QtGui.QIcon(f'{forward_data_dir}icon{client.id}.png'))
+        self.pushButton_15.setIcon(QtGui.QIcon(f'{data_dir}icon{client.id}.png'))
         self.pushButton_15.setIconSize(QtCore.QSize(40 * ratio + 1, 40 * ratio + 1))
-        self.pushButton_16.setStyleSheet(self.pushButton_16.styleSheet().replace('replace', forward_data_dir).replace(
+        self.pushButton_16.setStyleSheet(self.pushButton_16.styleSheet().replace('replace', data_dir).replace(
             '.png', f'{self.scaled}.png'))
-        self.pushButton_17.setStyleSheet(self.pushButton_17.styleSheet().replace('replace', forward_data_dir).replace(
+        self.pushButton_17.setStyleSheet(self.pushButton_17.styleSheet().replace('replace', data_dir).replace(
             '.png', f'{self.scaled}.png'
         ))
-        self.comboBox.setStyleSheet(self.comboBox.styleSheet().replace('replace', forward_data_dir))
+        self.comboBox.setStyleSheet(self.comboBox.styleSheet().replace('replace', data_dir))
         self.overlay = QtWidgets.QWidget(parent=self)
         self.overlay.setStyleSheet('background-color: rgba(0, 0, 0, 60);')
         self.overlay.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents, True)
@@ -754,10 +755,10 @@ class MainUI(UiMainWindow):
         def mainstatusdata(data):
 
             def changeicons():
-                self.pushButton_15.setIcon(QtGui.QIcon(f'{forward_data_dir}icon{client.id}.png'))
+                self.pushButton_15.setIcon(QtGui.QIcon(f'{data_dir}icon{client.id}.png'))
                 self.pushButton_15.setIconSize(QtCore.QSize(40 * ratio + 1, 40 * ratio + 1))
                 self.label_30.setStyleSheet(self.label_30_originalStyleSheet
-                                            .replace('replace', f'{forward_data_dir}icon{client.id}.png'))
+                                            .replace('replace', f'{data_dir}icon{client.id}.png'))
                 self.label_31.setText(limit_text_smart(client.spotifyclient.clientUsername, self.label_31))
                 self.label_top_info_1.setText(f'Logged in as: {client.spotifyclient.clientUsername}')
 
@@ -960,7 +961,7 @@ class MainUI(UiMainWindow):
                                                     QPushButton:pressed {
                                                         background-color: rgb%s;
                                                         border-left: 20px solid rgb%s;
-                                                    }''') % (forward_data_dir +
+                                                    }''') % (data_dir +
                                                              f'icons/20x20/cil-user-follow-notif{self.scaled}',
                                                              col,
                                                              repr(self.accent_color), repr(self.accent_color)))
@@ -1093,13 +1094,13 @@ class MainUI(UiMainWindow):
     QPushButton:pressed {
         background-color: rgb(85, 170, 255);
         border-left: 20px solid rgb(85, 170, 255);
-    }''' % (forward_data_dir, self.scaled))
+    }''' % (data_dir, self.scaled))
         self.verticalStackedWidget.setCurrentWidget(self.homePage)
         # settings related stuff
         self.pushButton_10.setStyleSheet(self.pushButton_10.styleSheet().
-                                         replace('replace', forward_data_dir).replace('.png', f'{self.scaled}.png'))
+                                         replace('replace', data_dir).replace('.png', f'{self.scaled}.png'))
         self.pushButton_10.setText(' View Logs')
-        self.pushButton_8.setStyleSheet(self.pushButton_8.styleSheet().replace('replace', forward_data_dir).replace(
+        self.pushButton_8.setStyleSheet(self.pushButton_8.styleSheet().replace('replace', data_dir).replace(
             '.png', f'{self.scaled}.png'
         ))
 
@@ -1146,7 +1147,7 @@ class MainUI(UiMainWindow):
         self.accent_color = (85, 170, 255)
         self.checkboxes = [self.checkBox, self.checkBox_2, self.checkBox_3, self.checkBox_4, self.checkBox_5,
                            self.checkBox_7, self.checkBox_10, self.checkBox_8, self.checkBox_9]
-        [checkbox.setStyleSheet(checkbox.styleSheet().replace('replace', forward_data_dir).replace(
+        [checkbox.setStyleSheet(checkbox.styleSheet().replace('replace', data_dir).replace(
             '.png', f'{self.scaled}.png'))
          for checkbox in self.checkboxes]
         self.accent_colors_checkboxes = {
@@ -1334,7 +1335,7 @@ class MainUI(UiMainWindow):
         self.horizontalSlider_2.valueChanged.connect(change_album_cache)
         self.lineEdit_2.editingFinished.connect(change_album_cache_text)
         self.lastalbumcachetext = self.lineEdit_2
-        self.pushButton_9.setStyleSheet(self.pushButton_9.styleSheet().replace('replace', forward_data_dir).replace(
+        self.pushButton_9.setStyleSheet(self.pushButton_9.styleSheet().replace('replace', data_dir).replace(
             '.png', f'{self.scaled}.png'
         ))
 
@@ -1461,7 +1462,7 @@ class MainUI(UiMainWindow):
             QPushButton:pressed {
                 background-color: rgb(85, 170, 255);
                 border-left: 20px solid rgb(85, 170, 255);
-            }''').replace('(85, 170, 255)', repr(self.accent_color)) % (forward_data_dir, icon, self.scaled))
+            }''').replace('(85, 170, 255)', repr(self.accent_color)) % (data_dir, icon, self.scaled))
         self.label_top_info_2.setText(name_)
         self.setWindowTitle(name_)
         [pushbutton.setStyleSheet(adj_style(self.ratio, pushbutton.menuAttrs[-1]).replace('(85, 170, 255)',
@@ -1486,12 +1487,12 @@ class MainUI(UiMainWindow):
         if self.isMaximized():
             self.showNormal()
             self.frame.show()
-            self.pushButton_3.setIcon(QtGui.QIcon(data_dir + f'icons\\24x24\\cil-window-maximize{self.scaled}.png'))
+            self.pushButton_3.setIcon(QtGui.QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-maximize{self.scaled}.png'))
             self.pushButton_3.tooltip = Tooltip('Maximize', self.pushButton_3)
         else:
             self.showMaximized()
             self.frame.hide()
-            self.pushButton_3.setIcon(QtGui.QIcon(data_dir + f'icons\\24x24\\cil-window-restore{self.scaled}.png'))
+            self.pushButton_3.setIcon(QtGui.QIcon(data_dir + f'icons{sep}24x24{sep}cil-window-restore{self.scaled}.png'))
             self.pushButton_3.tooltip = Tooltip('Restore', self.pushButton_3)
         if self.active_dialog:
             global_coords = self.mapToGlobal(self.rect().center())

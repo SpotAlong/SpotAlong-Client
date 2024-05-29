@@ -19,6 +19,7 @@ Copyright (C) 2020-Present CriticalElement
 import json
 import time
 import logging
+import os
 
 import keyring
 import requests
@@ -32,8 +33,9 @@ from utils.utils import convert_from_utc_timestamp
 This file provides an easy way to work with the SpotAlong login api.
 """
 
+sep = os.path.sep
 
-data_dir = user_data_dir('SpotAlong', 'CriticalElement') + '\\'
+data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
 
 __all__ = ('login', 'refresh', 'create_user', 'redeem_code')
 
