@@ -50,4 +50,4 @@ except Exception as exc:
     BASE_URL = 'https://spotalong-tj6cy.ondigitalocean.app/api'
     REGULAR_BASE = 'https://spotalong-tj6cy.ondigitalocean.app/'
 
-VERSION = '1.0.0'  # change this at your own risk (don't)
+VERSION = '1.0.1'  # change this at your own risk (don't)

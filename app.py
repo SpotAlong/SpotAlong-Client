@@ -14,7 +14,7 @@ __title__ = 'SpotAlong'
 __author__ = 'CriticalElement'
 __license__ = 'GNU AGPLv3'
 __copyright__ = 'Copyright (C) 2020-Present CriticalElement'
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 
 import re
@@ -33,9 +33,14 @@ if __name__ == '__main__' and '--ignore-singleton' not in sys.argv:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         is_open = False
         if PORT in [c.laddr.port for c in psutil.net_connections()]:
-            s.connect((ADDR, PORT))
-            s.sendall(b'raise')
-            is_open = True
+            try:
+                s.connect((ADDR, PORT))
+                s.sendall(b'raise')
+                is_open = True
+            except ConnectionRefusedError:
+                # the previous instance of SpotAlong has likely terminated, but might not have properly closed the
+                # socket, causing it to still be present in the OS.
+                print('Socket still present but unable to connect, continuing normally...', file=sys.stderr)
 
     if is_open:
         sys.exit(0)
@@ -81,9 +86,10 @@ from utils.constants import *
 
 QtGui.QFont = DpiFont
 
-sep = os.path.sep # Linux: /, Windows: \
+sep = os.path.sep  # Linux: /, Windows: \
 
 data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
+forward_data_dir = data_dir.replace('\\', '/')
 
 level = logging.INFO
 if {'-d', '-v', '--debug', '--verbose'} & set(sys.argv):
@@ -220,7 +226,7 @@ class MainUI(UiMainWindow):
         self.frame.setMinimumSize(QtCore.QSize(30, 0))
         self.frame.setMaximumSize(QtCore.QSize(30, 16777215))
         self.frame.setStyleSheet("QSizeGrip {\n"
-                                 f"	background-image: url({data_dir}icons/16x16/cil-size-grip"
+                                 f"	background-image: url({forward_data_dir}icons/16x16/cil-size-grip"
                                  f"{self.scaled}.png);\n "
                                  "  background-size: 48px;\n"
                                  "	background-position: bottom right;\n"
@@ -423,7 +429,7 @@ class MainUI(UiMainWindow):
     QPushButton:pressed {
         background-color: rgb(85, 170, 255);
         border-left: 20px solid rgb(85, 170, 255);
-    }''' % (data_dir, self.scaled))
+    }''' % (forward_data_dir, self.scaled))
         self.pushButton_6.setStyleSheet('''QPushButton {
                 background-image: url(%sicons/20x20/cil-settings%s.png);
                 background-position: left;
@@ -441,7 +447,7 @@ class MainUI(UiMainWindow):
             QPushButton:pressed {
                 background-color: rgb(85, 170, 255);
                 border-left: 20px solid rgb(85, 170, 255);
-            }''' % (data_dir, self.scaled))
+            }''' % (forward_data_dir, self.scaled))
         self.pushButton_14.setStyleSheet('''QPushButton {
                         background-image: url(%sicons/20x20/cil-people%s.png);
                         background-position: left;
@@ -459,7 +465,7 @@ class MainUI(UiMainWindow):
                     QPushButton:pressed {
                         background-color: rgb(85, 170, 255);
                         border-left: 20px solid rgb(85, 170, 255);
-                    }''' % (data_dir, self.scaled))
+                    }''' % (forward_data_dir, self.scaled))
         self.pushButton_11.setStyleSheet('''QPushButton {
                         background-image: url(%sicons/20x20/cil-user-follow%s.png);
                         background-position: left;
@@ -477,7 +483,7 @@ class MainUI(UiMainWindow):
                     QPushButton:pressed {
                         background-color: rgb(85, 170, 255);
                         border-left: 20px solid rgb(85, 170, 255);
-                    }''' % (data_dir, self.scaled))
+                    }''' % (forward_data_dir, self.scaled))
         self.pushButton_18.setStyleSheet('''QPushButton {
                                 background-image: url(%sicons/20x20/cil-headphones%s.png);
                                 background-position: left;
@@ -495,7 +501,7 @@ class MainUI(UiMainWindow):
                             QPushButton:pressed {
                                 background-color: rgb(85, 170, 255);
                                 border-left: 20px solid rgb(85, 170, 255);
-                            }''' % (data_dir, self.scaled))
+                            }''' % (forward_data_dir, self.scaled))
         self.comboBox.setStyleSheet(self.comboBox.styleSheet().replace('.png', f'{self.scaled}.png'))
         self.pushButton_18.setFont(self.pushButton_5.font())
         self.pushButton_8.setStyleSheet(self.pushButton_8.styleSheet().replace('20', '20px'))
@@ -575,7 +581,7 @@ class MainUI(UiMainWindow):
         self.pushButton.clicked.connect(self.menu_animation)
         self.label_30_originalStyleSheet = self.label_30.styleSheet()
         self.label_30.setStyleSheet(self.label_30.styleSheet().replace('replace',
-                                                                       f'{data_dir}icon{client.id}.png'))
+                                                                       f'{forward_data_dir}icon{client.id}.png'))
         self.label_31.setText(limit_text_smart(client.spotifyclient.clientUsername, self.label_31))
         self.label_34.setText(client.spotifyclient.friendCode)
         self.label_34.setStyleSheet('color: white; text-decoration: underline;')
@@ -593,12 +599,12 @@ class MainUI(UiMainWindow):
 
         self.pushButton_15.setIcon(QtGui.QIcon(f'{data_dir}icon{client.id}.png'))
         self.pushButton_15.setIconSize(QtCore.QSize(40 * ratio + 1, 40 * ratio + 1))
-        self.pushButton_16.setStyleSheet(self.pushButton_16.styleSheet().replace('replace', data_dir).replace(
+        self.pushButton_16.setStyleSheet(self.pushButton_16.styleSheet().replace('replace', forward_data_dir).replace(
             '.png', f'{self.scaled}.png'))
-        self.pushButton_17.setStyleSheet(self.pushButton_17.styleSheet().replace('replace', data_dir).replace(
+        self.pushButton_17.setStyleSheet(self.pushButton_17.styleSheet().replace('replace', forward_data_dir).replace(
             '.png', f'{self.scaled}.png'
         ))
-        self.comboBox.setStyleSheet(self.comboBox.styleSheet().replace('replace', data_dir))
+        self.comboBox.setStyleSheet(self.comboBox.styleSheet().replace('replace', forward_data_dir))
         self.overlay = QtWidgets.QWidget(parent=self)
         self.overlay.setStyleSheet('background-color: rgba(0, 0, 0, 60);')
         self.overlay.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents, True)
@@ -608,8 +614,11 @@ class MainUI(UiMainWindow):
         def log_out():
             try:
                 keyring.delete_password('SpotAlong', 'auth_token')
-                keyring.delete_password('SpotAlong', 'cookie')
-            except keyring.errors.PasswordDeleteError:
+                cookie_num = int(keyring.get_password('SpotAlong', 'cookie_len'))
+                for i in range(cookie_num):
+                    keyring.delete_password('SpotAlong', 'cookie' + str(i))
+                keyring.delete_password('SpotAlong', 'cookie_len')
+            except (keyring.errors.PasswordDeleteError, ValueError):
                 pass
             logging.info(f'Logging out as user {client.spotifyclient.clientUsername}')
             stop_all()
@@ -758,7 +767,7 @@ class MainUI(UiMainWindow):
                 self.pushButton_15.setIcon(QtGui.QIcon(f'{data_dir}icon{client.id}.png'))
                 self.pushButton_15.setIconSize(QtCore.QSize(40 * ratio + 1, 40 * ratio + 1))
                 self.label_30.setStyleSheet(self.label_30_originalStyleSheet
-                                            .replace('replace', f'{data_dir}icon{client.id}.png'))
+                                            .replace('replace', f'{forward_data_dir}icon{client.id}.png'))
                 self.label_31.setText(limit_text_smart(client.spotifyclient.clientUsername, self.label_31))
                 self.label_top_info_1.setText(f'Logged in as: {client.spotifyclient.clientUsername}')
 
@@ -961,7 +970,7 @@ class MainUI(UiMainWindow):
                                                     QPushButton:pressed {
                                                         background-color: rgb%s;
                                                         border-left: 20px solid rgb%s;
-                                                    }''') % (data_dir +
+                                                    }''') % (forward_data_dir +
                                                              f'icons/20x20/cil-user-follow-notif{self.scaled}',
                                                              col,
                                                              repr(self.accent_color), repr(self.accent_color)))
@@ -1094,13 +1103,13 @@ class MainUI(UiMainWindow):
     QPushButton:pressed {
         background-color: rgb(85, 170, 255);
         border-left: 20px solid rgb(85, 170, 255);
-    }''' % (data_dir, self.scaled))
+    }''' % (forward_data_dir, self.scaled))
         self.verticalStackedWidget.setCurrentWidget(self.homePage)
         # settings related stuff
         self.pushButton_10.setStyleSheet(self.pushButton_10.styleSheet().
-                                         replace('replace', data_dir).replace('.png', f'{self.scaled}.png'))
+                                         replace('replace', forward_data_dir).replace('.png', f'{self.scaled}.png'))
         self.pushButton_10.setText(' View Logs')
-        self.pushButton_8.setStyleSheet(self.pushButton_8.styleSheet().replace('replace', data_dir).replace(
+        self.pushButton_8.setStyleSheet(self.pushButton_8.styleSheet().replace('replace', forward_data_dir).replace(
             '.png', f'{self.scaled}.png'
         ))
 
@@ -1147,7 +1156,7 @@ class MainUI(UiMainWindow):
         self.accent_color = (85, 170, 255)
         self.checkboxes = [self.checkBox, self.checkBox_2, self.checkBox_3, self.checkBox_4, self.checkBox_5,
                            self.checkBox_7, self.checkBox_10, self.checkBox_8, self.checkBox_9]
-        [checkbox.setStyleSheet(checkbox.styleSheet().replace('replace', data_dir).replace(
+        [checkbox.setStyleSheet(checkbox.styleSheet().replace('replace', forward_data_dir).replace(
             '.png', f'{self.scaled}.png'))
          for checkbox in self.checkboxes]
         self.accent_colors_checkboxes = {
@@ -1335,7 +1344,7 @@ class MainUI(UiMainWindow):
         self.horizontalSlider_2.valueChanged.connect(change_album_cache)
         self.lineEdit_2.editingFinished.connect(change_album_cache_text)
         self.lastalbumcachetext = self.lineEdit_2
-        self.pushButton_9.setStyleSheet(self.pushButton_9.styleSheet().replace('replace', data_dir).replace(
+        self.pushButton_9.setStyleSheet(self.pushButton_9.styleSheet().replace('replace', forward_data_dir).replace(
             '.png', f'{self.scaled}.png'
         ))
 
@@ -1462,7 +1471,7 @@ class MainUI(UiMainWindow):
             QPushButton:pressed {
                 background-color: rgb(85, 170, 255);
                 border-left: 20px solid rgb(85, 170, 255);
-            }''').replace('(85, 170, 255)', repr(self.accent_color)) % (data_dir, icon, self.scaled))
+            }''').replace('(85, 170, 255)', repr(self.accent_color)) % (forward_data_dir, icon, self.scaled))
         self.label_top_info_2.setText(name_)
         self.setWindowTitle(name_)
         [pushbutton.setStyleSheet(adj_style(self.ratio, pushbutton.menuAttrs[-1]).replace('(85, 170, 255)',

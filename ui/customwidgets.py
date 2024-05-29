@@ -55,7 +55,7 @@ if typing.TYPE_CHECKING:
 sep = os.path.sep
 
 data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
-forward_data_dir = data_dir
+forward_data_dir = data_dir.replace('\\', '/')
 logger = logging.getLogger(__name__)
 
 
@@ -4952,6 +4952,7 @@ class SocketListener(QtCore.QThread):
                 with conn:
                     data = conn.recv(1024)
                     if data == b'close':
+                        s.close()
                         return
                     self.emitter.emit(data)
 

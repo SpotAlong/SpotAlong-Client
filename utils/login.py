@@ -50,7 +50,7 @@ def login():
     if not keyring.get_password('SpotAlong', 'auth_token'):
         return False
     else:
-        if not keyring.get_password('SpotAlong', 'cookie'):
+        if not keyring.get_password('SpotAlong', 'cookie_len'):
             return False
     try:
         auth_token_dict = json.loads(keyring.get_password('SpotAlong', 'auth_token'))

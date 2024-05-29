@@ -439,7 +439,9 @@ class MainClient:
             self.client.on('listening_state', recieve_state, namespace='/api/authorization')
 
         try:
-            self.spotifyplayer = SpotifyPlayer(cookie_str=keyring.get_password('SpotAlong', 'cookie'))
+            cookie_num = int(keyring.get_password('SpotAlong', 'cookie_len'))
+            cookie = ''.join([keyring.get_password('SpotAlong', 'cookie' + str(i)) for i in range(cookie_num)])
+            self.spotifyplayer = SpotifyPlayer(cookie_str=cookie)
             self.spotifyplayer.add_event_reciever(self.send_next_for_listening)
             self.spotifyplayer.add_event_reciever(self.send_state_for_listening)
         except Exception as e:
