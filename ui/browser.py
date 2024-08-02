@@ -26,7 +26,7 @@ from PyQt5.QtNetwork import QNetworkCookie, QNetworkCookieJar
 from PyQt5.QtWebEngineCore import *
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWidgets import *
-from appdirs import user_data_dir
+from platformdirs import user_data_dir
 
 from utils.uiutils import adjust_sizing, get_ratio, scale_images
 

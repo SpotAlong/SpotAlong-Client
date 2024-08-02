@@ -18,11 +18,9 @@ Copyright (C) 2020-Present CriticalElement
 
 import json
 import logging
-import time
 import os
 
-import requests
-from appdirs import user_data_dir
+from platformdirs import user_data_dir
 
 sep = os.path.sep
 
@@ -32,22 +30,23 @@ data_dir = user_data_dir('SpotAlong', 'CriticalElement') + sep
 
 
 try:
-    if time.time() > 1722488400:
-        try:
-            text = requests.get('https://spotalong.github.io/url.json', timeout=5).text
-            with open(f'{data_dir}url.json', 'w') as f:
-                f.write(text)
-        except Exception as exc:
-            logger.warning('Arbitrary error occured when updating server url from lookup, reverting to defaults:',
-                           exc_info=exc)
-
+    edit = False
     with open(f'{data_dir}url.json', 'r') as f:
         urls = json.load(f)
         BASE_URL = urls['BASE_URL']
         REGULAR_BASE = urls['REGULAR_BASE']
+        if BASE_URL == 'https://spotalong-tj6cy.ondigitalocean.app/api':
+            BASE_URL = 'https://spotalong.herokuapp.com/api'
+            REGULAR_BASE = 'https://spotalong.herokuapp.com/'
+            urls['BASE_URL'] = BASE_URL
+            urls['REGULAR_BASE'] = REGULAR_BASE
+            edit = True
+    if edit:
+        with open(f'{data_dir}url.json', 'w') as f:
+            json.dump(urls, f)
 except Exception as exc:
     logger.warning('Arbitrary error occurred when getting server url, reverting to defaults: ', exc_info=exc)
-    BASE_URL = 'https://spotalong-tj6cy.ondigitalocean.app/api'
-    REGULAR_BASE = 'https://spotalong-tj6cy.ondigitalocean.app/'
+    BASE_URL = 'https://spotalong.herokuapp.com/api'
+    REGULAR_BASE = 'https://spotalong.herokuapp.com/'
 
-VERSION = '1.0.1'  # change this at your own risk (don't)
+VERSION = '1.0.2'  # change this at your own risk (don't)

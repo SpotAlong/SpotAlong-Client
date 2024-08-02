@@ -20,7 +20,7 @@ import time
 import logging
 from threading import Thread
 
-from appdirs import user_data_dir
+from platformdirs import user_data_dir
 from socketio.exceptions import SocketIOError
 
 from spotifyclient.spotifyplayer import SpotifyPlayer  # noqa

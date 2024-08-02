@@ -36,7 +36,7 @@ import numpy as np
 from PIL import Image, ImageOps
 from PIL.PyAccess import PyAccess
 from PyQt5 import QtCore, QtWidgets, QtGui, sip
-from appdirs import *
+from platformdirs import *
 from colorthief import ColorThief
 
 from spotifyclient.spotifyplayer import SpotifyPlayer

@@ -23,7 +23,7 @@ import time
 from typing import Callable, Union
 
 import PIL
-from appdirs import user_data_dir
+from platformdirs import user_data_dir
 from PIL import Image
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton

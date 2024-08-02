@@ -26,12 +26,12 @@ VSVersionInfo(
       StringTable(
         u'040904b0',
         [StringStruct(u'FileDescription', u'SpotAlong'),
-        StringStruct(u'FileVersion', u'1.0.1'),
+        StringStruct(u'FileVersion', u'1.0.2'),
         StringStruct(u'InternalName', u'SpotAlong'),
         StringStruct(u'LegalCopyright', u'Copyright © 2024'),
         StringStruct(u'OriginalFilename', u'SpotAlong.exe'),
         StringStruct(u'ProductName', u'SpotAlong'),
-        StringStruct(u'ProductVersion', u'1.0.1')])
+        StringStruct(u'ProductVersion', u'1.0.2')])
       ]),
     VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
   ]

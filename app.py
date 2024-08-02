@@ -14,7 +14,7 @@ __title__ = 'SpotAlong'
 __author__ = 'CriticalElement'
 __license__ = 'GNU AGPLv3'
 __copyright__ = 'Copyright (C) 2020-Present CriticalElement'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 
 import re
@@ -71,7 +71,7 @@ import requests
 import pyperclip
 from PyQt5 import sip
 from PyQt5 import QtCore, QtGui, QtWidgets
-from appdirs import user_data_dir
+from platformdirs import user_data_dir
 from PIL import Image, ImageOps
 
 import ui.customwidgets

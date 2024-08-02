@@ -24,7 +24,7 @@ from threading import Thread
 from zipfile import ZipFile
 
 from PyQt5 import QtWidgets, QtCore, QtGui
-from appdirs import user_data_dir
+from platformdirs import user_data_dir
 
 from app import MainUI
 from utils.login import *

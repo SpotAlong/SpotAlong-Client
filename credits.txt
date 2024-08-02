@@ -5,7 +5,7 @@ python_socketio
 PyQt5
 PyQt5-tools
 PyQtWebEngine
-appdirs
+platformdirs
 numpy
 colorthief
 pillow

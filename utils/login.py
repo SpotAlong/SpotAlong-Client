@@ -23,7 +23,7 @@ import os
 
 import keyring
 import requests
-from appdirs import user_data_dir
+from platformdirs import user_data_dir
 
 from utils.constants import *
 from utils.utils import convert_from_utc_timestamp

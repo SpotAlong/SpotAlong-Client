@@ -32,7 +32,7 @@ import requests
 import numpy as np
 from PIL.PyAccess import PyAccess
 from colorthief import ColorThief
-from appdirs import user_data_dir
+from platformdirs import user_data_dir
 from PIL import Image, ImageStat
 
 from .constants import BASE_URL  # noqa

@@ -32,7 +32,7 @@ import numpy as np
 import socketio.exceptions
 from colorthief import ColorThief
 from socketio import Client
-from appdirs import user_data_dir
+from platformdirs import user_data_dir
 from PyQt5 import QtWidgets, QtCore
 from PIL import Image, ImageOps
 

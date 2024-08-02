@@ -65,7 +65,7 @@ CreateShortcut "$SMPROGRAMS\SpotAlong.lnk" "$INSTDIR\SpotAlong.exe"
 ApplicationID::Set "$SMPROGRAMS\SpotAlong.lnk" "CriticalElement.SpotAlong"
 
 WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "DisplayName"          "SpotAlong"
-WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "DisplayVersion"       "1.0.1"
+WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "DisplayVersion"       "1.0.2"
 WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "DisplayIcon"          "$\"$INSTDIR\logo.ico$\""
 WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "UninstallString"      "$\"$INSTDIR\uninstall.exe$\""
 WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
